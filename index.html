@@ -152,13 +152,8 @@
     background: linear-gradient(180deg, #EAF3FB 0%, #D8E9F5 55%, #C7DEEE 100%);
   }
   body.theme-retro     { background: #008080; }
-  body.theme-glass      {
-    background:
-      radial-gradient(circle at 12% 18%, rgba(159,223,255,0.42) 0%, transparent 45%),
-      radial-gradient(circle at 88% 12%, rgba(140,190,255,0.4) 0%, transparent 45%),
-      radial-gradient(circle at 50% 90%, rgba(170,190,255,0.35) 0%, transparent 48%),
-      radial-gradient(circle at 92% 82%, rgba(150,255,225,0.38) 0%, transparent 45%),
-      #F0F4F8;
+  body.theme-summer {
+    background: linear-gradient(180deg, #BFEFFF 0%, #6FD8E0 45%, #1FB8C4 100%);
   }
   body.theme-matrix    { background: #000000; }
   body.theme-jackpot   { background: #1A1024; }
@@ -174,7 +169,7 @@
   .cr-root.theme-retro, .cr-overlay.theme-retro,
   .cr-root.theme-manuscript, .cr-overlay.theme-manuscript,
   .cr-root.theme-winter, .cr-overlay.theme-winter,
-  .cr-root.theme-glass, .cr-overlay.theme-glass {
+  .cr-root.theme-summer, .cr-overlay.theme-summer {
     --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
     --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
   }
@@ -201,11 +196,11 @@
     --accent:#000080; --accent-dim:#D4D0C8;
     font-family: '굴림', Gulim, Dotum, sans-serif;
   }
-  /* 444: 리퀴드 글라스 — 반투명 유리 재질 + 배경 그라데이션이 은은히 비침 */
-  .cr-root.theme-glass, .cr-overlay.theme-glass {
-    --bg: rgba(255,255,255,0.30); --panel: rgba(255,255,255,0.55);
-    --ink:#1E2233; --muted:#5C6478; --line: rgba(255,255,255,0.55);
-    --accent:#0A84FF; --accent-dim: rgba(10,132,255,0.14);
+  /* 444: 여름 바다 — 터키석빛 그라데이션 + 산호색 포인트 + 반투명 유리 카드 */
+  .cr-root.theme-summer, .cr-overlay.theme-summer {
+    --bg: rgba(255,255,255,0.35); --panel: rgba(255,255,255,0.62);
+    --ink:#0A4A52; --muted:#3F8A93; --line: rgba(255,255,255,0.6);
+    --accent:#FF6B4A; --accent-dim: rgba(255,107,74,0.16);
   }
   /* 666: 매트릭스 해킹 — 검정 배경 + 초록 글자, 뒤로 디지털 레인 캔버스 */
   .cr-root.theme-matrix, .cr-overlay.theme-matrix {
@@ -299,14 +294,14 @@
     96% { text-shadow: 2px 0 #ff2b4d, -2px 0 #00fff9; transform: translate(0,0); }
   }
 
-  /* 리퀴드 글라스 — 블러 + 반투명 */
-  .theme-glass.cr-root, .theme-glass.cr-overlay {
+  /* 444: 여름 바다 — 블러 + 반투명 + 산호색 포인트 */
+  .theme-summer.cr-root, .theme-summer.cr-overlay {
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
   }
-  .theme-glass .cr-card, .theme-glass .cr-col, .theme-glass .cr-modal, .theme-glass .cr-mini-panel,
-  .theme-glass .cr-check-pill, .theme-glass .cr-search-input,
-  .theme-glass input, .theme-glass select, .theme-glass textarea {
+  .theme-summer .cr-card, .theme-summer .cr-col, .theme-summer .cr-modal, .theme-summer .cr-mini-panel,
+  .theme-summer .cr-check-pill, .theme-summer .cr-search-input,
+  .theme-summer input, .theme-summer select, .theme-summer textarea {
     background: var(--panel) !important;
     backdrop-filter: blur(14px) saturate(150%);
     -webkit-backdrop-filter: blur(14px) saturate(150%);
@@ -314,20 +309,22 @@
     box-shadow: 0 4px 16px rgba(31,38,60,0.08), inset 0 1px 0 rgba(255,255,255,0.55);
   }
   /* 위의 border 재설정이 카드 왼쪽 상태색 테두리까지 지워버리므로 되살림 */
-  .theme-glass .cr-card.st-waiting   { border-left: 4px solid var(--wait-ink) !important; }
-  .theme-glass .cr-card.st-consult   { border-left: 4px solid var(--consult) !important; background: var(--consult-bg) !important; }
-  .theme-glass .cr-card.st-done      { border-left: 4px solid var(--done) !important; background: var(--done-bg) !important; }
-  .theme-glass .cr-card.st-discharge { border-left: 4px solid var(--discharge-ink) !important; background: var(--discharge-bg) !important; }
-  .theme-glass .cr-card.st-anomaly   { border-left: 4px solid var(--anomaly) !important; background: var(--anomaly-bg) !important; }
-  .theme-glass .cr-btn-primary {
-    box-shadow: 0 4px 12px rgba(10,132,255,0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+  .theme-summer .cr-card.st-waiting   { border-left: 4px solid var(--wait-ink) !important; }
+  .theme-summer .cr-card.st-consult   { border-left: 4px solid var(--consult) !important; background: var(--consult-bg) !important; }
+  .theme-summer .cr-card.st-done      { border-left: 4px solid var(--done) !important; background: var(--done-bg) !important; }
+  .theme-summer .cr-card.st-discharge { border-left: 4px solid var(--discharge-ink) !important; background: var(--discharge-bg) !important; }
+  .theme-summer .cr-card.st-anomaly   { border-left: 4px solid var(--anomaly) !important; background: var(--anomaly-bg) !important; }
+  .theme-summer .cr-btn-primary {
+    box-shadow: 0 4px 12px rgba(255,107,74,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
   }
-  .theme-glass .cr-btn-ghost {
+  .theme-summer .cr-btn-ghost {
     background: rgba(255,255,255,0.4) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.5);
   }
+  .theme-summer .cr-title::after { content: ' 🌴'; }
+  .theme-summer .cr-title { text-shadow: 0 0 10px rgba(255,255,255,0.6); }
 
   /* 333: 겨울 — 서리 낀 반투명 유리 카드 + 얼음빛 프로스트 글로우 */
   .theme-winter.cr-root, .theme-winter.cr-overlay {
@@ -370,6 +367,18 @@
     50%  { transform: translate(18px, 50vh); }
     90%  { opacity:0.95; }
     100% { transform: translate(-18px, 110vh); opacity:0; }
+  }
+
+  /* 444 여름: 위로 떠오르는 기포/열대 이모지 */
+  #cr-bubbles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  #cr-bubbles span { position:absolute; bottom:-10%; will-change:transform,opacity; }
+  #cr-bubbles span.circ { border-radius:50%; background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.15) 70%); box-shadow:0 0 6px rgba(255,255,255,0.5); }
+  @keyframes cr-bubble-rise {
+    0%   { transform: translate(0,0) scale(0.9);        opacity:0; }
+    10%  { opacity:0.9; }
+    50%  { transform: translate(16px,-55vh) scale(1);   }
+    90%  { opacity:0.9; }
+    100% { transform: translate(-16px,-115vh) scale(1.1); opacity:0; }
   }
 </style>
 
@@ -420,7 +429,7 @@
     '000': 'light',
     '222': 'pink',
     '333': 'winter',
-    '444': 'glass',
+    '444': 'summer',
     '555': 'retro',
     '666': 'matrix',
     '777': 'jackpot',
@@ -515,11 +524,42 @@
     document.body.appendChild(el);
   }
 
+  function renderBubbles(){
+    let el = document.getElementById('cr-bubbles');
+    if (currentTheme !== 'summer'){
+      if (el) el.remove();
+      return;
+    }
+    if (el) return; // 이미 떠 있으면 재생성해서 애니메이션 끊기지 않게 둠
+    el = document.createElement('div');
+    el.id = 'cr-bubbles';
+    const emojis = ['🌴','🍉','☀️','🐚','🌺'];
+    let html = '';
+    for (let i = 0; i < 10; i++){
+      const left = Math.random() * 100;
+      const delay = Math.random() * 8;
+      const duration = 7 + Math.random() * 6;
+      const size = 16 + Math.random() * 12;
+      const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+      html += '<span style="left:'+left+'%;font-size:'+size+'px;animation:cr-bubble-rise '+duration+'s linear '+delay+'s infinite;">'+emoji+'</span>';
+    }
+    for (let i = 0; i < 18; i++){
+      const left = Math.random() * 100;
+      const delay = Math.random() * 8;
+      const duration = 6 + Math.random() * 6;
+      const size = 6 + Math.random() * 12;
+      html += '<span class="circ" style="left:'+left+'%;width:'+size+'px;height:'+size+'px;animation:cr-bubble-rise '+duration+'s linear '+delay+'s infinite;"></span>';
+    }
+    el.innerHTML = html;
+    document.body.appendChild(el);
+  }
+
   function applyTheme(){
     document.body.className = currentTheme !== 'light' ? 'themed theme-' + currentTheme : '';
     renderHearts();
     renderMatrixRain();
     renderSnow();
+    renderBubbles();
     render();
   }
 
