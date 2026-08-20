@@ -154,6 +154,26 @@
   body.theme-retro     { background: #008080; }
   body.theme-summer {
     background: linear-gradient(180deg, #BFEFFF 0%, #6FD8E0 45%, #1FB8C4 100%);
+    position: relative;
+  }
+  body.theme-summer::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.55) 1.5px, transparent 1.5px),
+      radial-gradient(circle, rgba(255,255,255,0.35) 1.5px, transparent 1.5px);
+    background-size: 70px 70px, 110px 110px;
+    background-position: 0 0, 35px 45px;
+    mix-blend-mode: screen;
+    animation: cr-water-caustics 9s ease-in-out infinite alternate;
+  }
+  @keyframes cr-water-caustics {
+    0%   { background-position: 0 0, 35px 45px;     opacity: 0.35; }
+    50%  { background-position: 25px 18px, 12px 60px; opacity: 0.6; }
+    100% { background-position: -18px 30px, 55px 10px; opacity: 0.4; }
   }
   body.theme-matrix    { background: #000000; }
   body.theme-jackpot   { background: #1A1024; }
@@ -196,11 +216,11 @@
     --accent:#000080; --accent-dim:#D4D0C8;
     font-family: '굴림', Gulim, Dotum, sans-serif;
   }
-  /* 444: 여름 바다 — 터키석빛 그라데이션 + 산호색 포인트 + 반투명 유리 카드 */
+  /* 444: 여름 바다 — 터키석빛 그라데이션 + 녹아드는 골드 포인트 + 반투명 유리 카드 */
   .cr-root.theme-summer, .cr-overlay.theme-summer {
     --bg: rgba(255,255,255,0.35); --panel: rgba(255,255,255,0.62);
     --ink:#0A4A52; --muted:#3F8A93; --line: rgba(255,255,255,0.6);
-    --accent:#FF6B4A; --accent-dim: rgba(255,107,74,0.16);
+    --accent:#E8B84B; --accent-dim: rgba(232,184,75,0.18);
   }
   /* 666: 매트릭스 해킹 — 검정 배경 + 초록 글자, 뒤로 디지털 레인 캔버스 */
   .cr-root.theme-matrix, .cr-overlay.theme-matrix {
@@ -315,7 +335,7 @@
   .theme-summer .cr-card.st-discharge { border-left: 4px solid var(--discharge-ink) !important; background: var(--discharge-bg) !important; }
   .theme-summer .cr-card.st-anomaly   { border-left: 4px solid var(--anomaly) !important; background: var(--anomaly-bg) !important; }
   .theme-summer .cr-btn-primary {
-    box-shadow: 0 4px 12px rgba(255,107,74,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+    box-shadow: 0 4px 12px rgba(232,184,75,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
   }
   .theme-summer .cr-btn-ghost {
     background: rgba(255,255,255,0.4) !important;
@@ -323,7 +343,6 @@
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.5);
   }
-  .theme-summer .cr-title::after { content: ' 🌴'; }
   .theme-summer .cr-title { text-shadow: 0 0 10px rgba(255,255,255,0.6); }
 
   /* 333: 겨울 — 서리 낀 반투명 유리 카드 + 얼음빛 프로스트 글로우 */
@@ -346,7 +365,6 @@
   .theme-winter .cr-title {
     text-shadow: 0 0 8px rgba(46,125,199,0.35);
   }
-  .theme-winter .cr-title::after { content: ' ❄️'; }
 
   /* 222 발렌타인: 떨어지는 하트 */
   #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
