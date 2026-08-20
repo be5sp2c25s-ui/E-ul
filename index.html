@@ -144,7 +144,7 @@
      상태색(대기/진료중/완료/귀가/이상)은 배경이 밝은 테마 vs 어두운 테마
      딱 두 세트만 써서 항상 같은 의미로 인식되도록 고정 — 테마별로 안 바뀜 */
   body.theme-pink      { background: #FFF0F5; }
-  body.theme-cyberpunk { background: #050505; }
+  body.theme-cyberpunk { background: linear-gradient(160deg, #030303 0%, #1C1C20 50%, #050505 100%); }
   body.theme-party     { background: #FFFCF0; }
   body.theme-glass      {
     background:
@@ -178,10 +178,10 @@
     --bg:#FFF0F5; --panel:#FFFFFF; --ink:#5C2A3D; --muted:#B87A96; --line:#F5C6D9;
     --accent:#E8578A; --accent-dim:#FCE0EB;
   }
-  /* 333: 사이버펑크 네온 — 순검정 배경 + 시안 네온 테두리 글로우 */
+  /* 333: 사이버펑크 네온 — 회색 그라데이션 배경 + 화이트 네온 테두리 글로우 */
   .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk {
-    --bg:#050505; --panel:#0F0F12; --ink:#F2F2F5; --muted:#8A8A99; --line:#232329;
-    --accent:#00D9E8; --accent-dim:#0A2A2E;
+    --bg:#0A0A0C; --panel:#131316; --ink:#F5F5F7; --muted:#8A8A93; --line:#2A2A2E;
+    --accent:#F5F5F7; --accent-dim:#2A2A2E;
   }
   .cr-root.theme-party, .cr-overlay.theme-party {
     --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
@@ -262,6 +262,7 @@
   .theme-cyberpunk .cr-card.st-discharge { border-color: var(--discharge-ink); box-shadow: 0 0 5px color-mix(in srgb, var(--discharge-ink) 40%, transparent); }
   .theme-cyberpunk .cr-card.st-anomaly   { border-color: var(--anomaly); box-shadow: 0 0 7px color-mix(in srgb, var(--anomaly) 55%, transparent); }
   .theme-cyberpunk .cr-btn-primary {
+    color: #0A0A0C;
     box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
   }
   .theme-cyberpunk .cr-title {
