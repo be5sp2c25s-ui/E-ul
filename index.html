@@ -143,7 +143,7 @@
      상태색(대기/진료중/완료/귀가/이상)은 배경이 밝은 테마 vs 어두운 테마
      딱 두 세트만 써서 항상 같은 의미로 인식되도록 고정 — 테마별로 안 바뀜 */
   body.theme-pink      { background: #FFF0F5; }
-  body.theme-cyberpunk { background: #0A0014; }
+  body.theme-cyberpunk { background: #050505; }
   body.theme-party     { background: #FFFCF0; }
   body.theme-ghost     { background: #1A1625; }
   body.theme-hellfire  { background: #140505; }
@@ -170,10 +170,10 @@
     --bg:#FFF0F5; --panel:#FFFFFF; --ink:#5C2A3D; --muted:#B87A96; --line:#F5C6D9;
     --accent:#E8578A; --accent-dim:#FCE0EB;
   }
-  /* 333: 사이버펑크 네온 — 짙은 배경 + 시안/마젠타 네온 테두리 글로우 */
+  /* 333: 사이버펑크 네온 — 순검정 배경 + 시안 네온 테두리 글로우 */
   .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk {
-    --bg:#0A0014; --panel:#140022; --ink:#F0E6FF; --muted:#9B7FC4; --line:#3D1F5C;
-    --accent:#00F0FF; --accent-dim:#0F2A3A;
+    --bg:#050505; --panel:#0F0F12; --ink:#F2F2F5; --muted:#8A8A99; --line:#232329;
+    --accent:#00D9E8; --accent-dim:#0A2A2E;
   }
   .cr-root.theme-party, .cr-overlay.theme-party {
     --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
@@ -207,25 +207,25 @@
   .themed input, .themed select, .themed textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
   .themed .cr-check-pill .cr-box { color: var(--panel); }
 
-  /* 사이버펑크 네온 글로우 테두리 */
+  /* 사이버펑크 네온 글로우 테두리 (은은하게 — 텍스트 가독성 우선) */
   .theme-cyberpunk .cr-col, .theme-cyberpunk .cr-modal, .theme-cyberpunk .cr-mini-panel {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 10px rgba(0,240,255,0.35), inset 0 0 16px rgba(0,240,255,0.04);
+    box-shadow: 0 0 7px color-mix(in srgb, var(--accent) 40%, transparent);
   }
   .theme-cyberpunk .cr-card {
     border-width: 1.5px;
-    box-shadow: 0 0 6px rgba(0,240,255,0.15);
+    box-shadow: 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
   }
-  .theme-cyberpunk .cr-card.st-waiting   { border-color: var(--wait-ink); box-shadow: 0 0 9px var(--wait-ink); }
-  .theme-cyberpunk .cr-card.st-consult   { border-color: var(--consult); box-shadow: 0 0 11px var(--consult); }
-  .theme-cyberpunk .cr-card.st-done      { border-color: var(--done); box-shadow: 0 0 11px var(--done); }
-  .theme-cyberpunk .cr-card.st-discharge { border-color: var(--discharge-ink); box-shadow: 0 0 7px var(--discharge-ink); }
-  .theme-cyberpunk .cr-card.st-anomaly   { border-color: var(--anomaly); box-shadow: 0 0 11px var(--anomaly); }
+  .theme-cyberpunk .cr-card.st-waiting   { border-color: var(--wait-ink); box-shadow: 0 0 5px color-mix(in srgb, var(--wait-ink) 45%, transparent); }
+  .theme-cyberpunk .cr-card.st-consult   { border-color: var(--consult); box-shadow: 0 0 7px color-mix(in srgb, var(--consult) 55%, transparent); }
+  .theme-cyberpunk .cr-card.st-done      { border-color: var(--done); box-shadow: 0 0 7px color-mix(in srgb, var(--done) 55%, transparent); }
+  .theme-cyberpunk .cr-card.st-discharge { border-color: var(--discharge-ink); box-shadow: 0 0 5px color-mix(in srgb, var(--discharge-ink) 40%, transparent); }
+  .theme-cyberpunk .cr-card.st-anomaly   { border-color: var(--anomaly); box-shadow: 0 0 7px color-mix(in srgb, var(--anomaly) 55%, transparent); }
   .theme-cyberpunk .cr-btn-primary {
-    box-shadow: 0 0 12px var(--accent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
   }
   .theme-cyberpunk .cr-title {
-    text-shadow: 0 0 8px rgba(0,240,255,0.6);
+    text-shadow: 0 0 5px color-mix(in srgb, var(--accent) 45%, transparent);
   }
 
   /* 222 발렌타인: 떨어지는 하트 */
