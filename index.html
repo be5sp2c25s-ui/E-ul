@@ -6,6 +6,9 @@
 <title>이울 중앙안내 환자 시트</title>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
   body { margin:0; background:#F5F7FA; }
   .cr-root, .cr-overlay {
@@ -187,7 +190,7 @@
   .cr-root.theme-retro, .cr-overlay.theme-retro {
     --bg:#C0C0C0; --panel:#C0C0C0; --ink:#000000; --muted:#4B4B4B; --line:#808080;
     --accent:#000080; --accent-dim:#D4D0C8;
-    font-family: Tahoma, "Segoe UI", Verdana, Arial, sans-serif;
+    font-family: 'VT323', Tahoma, monospace;
   }
   /* 444: 리퀴드 글라스 — 반투명 유리 재질 + 배경 그라데이션이 은은히 비침 */
   .cr-root.theme-glass, .cr-overlay.theme-glass {
@@ -239,7 +242,7 @@
     color: #000 !important;
   }
   .theme-retro .cr-col-head, .theme-retro .cr-modal h3, .theme-retro .cr-mini-panel h4 {
-    background: linear-gradient(90deg,#000080,#1084D0) !important;
+    background: #000080 !important;
     color: #FFFFFF !important;
     margin: -1px -1px 8px -1px !important;
     padding: 4px 8px !important;
@@ -252,6 +255,12 @@
   .theme-retro .cr-card.st-discharge { border-color: var(--discharge-ink) !important; }
   .theme-retro .cr-card.st-anomaly   { border-color: var(--anomaly) !important; }
   .theme-retro .cr-status-dot { border-radius: 50% !important; }
+  /* VT323는 작은 크기에서 얇게 보이므로 촘촘한 텍스트들은 살짝 키움 */
+  .theme-retro .cr-chip, .theme-retro .cr-card-no, .theme-retro .cr-card-status,
+  .theme-retro .cr-us-time, .theme-retro .cr-dept-tag, .theme-retro .cr-mini-chip,
+  .theme-retro .cr-legend { font-size: 13px !important; letter-spacing: 0.3px; }
+  .theme-retro .cr-card-name { font-size: 16px !important; }
+  .theme-retro .cr-btn { font-size: 15px !important; }
 
   /* 리퀴드 글라스 — 블러 + 반투명 */
   .theme-glass.cr-root, .theme-glass.cr-overlay {
