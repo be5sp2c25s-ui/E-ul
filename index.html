@@ -8,7 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <style>
   body { margin:0; background:#F5F7FA; }
@@ -152,19 +152,25 @@
   body.theme-retro     { background: #008080; }
   body.theme-glass      {
     background:
-      radial-gradient(circle at 12% 18%, rgba(255,180,224,0.4) 0%, transparent 45%),
-      radial-gradient(circle at 88% 12%, rgba(159,223,255,0.4) 0%, transparent 45%),
-      radial-gradient(circle at 50% 90%, rgba(201,182,255,0.35) 0%, transparent 48%),
-      radial-gradient(circle at 92% 82%, rgba(185,255,224,0.35) 0%, transparent 45%),
-      #F5F6F9;
+      radial-gradient(circle at 12% 18%, rgba(159,223,255,0.42) 0%, transparent 45%),
+      radial-gradient(circle at 88% 12%, rgba(140,190,255,0.4) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(170,190,255,0.35) 0%, transparent 48%),
+      radial-gradient(circle at 92% 82%, rgba(150,255,225,0.38) 0%, transparent 45%),
+      #F0F4F8;
   }
   body.theme-matrix    { background: #000000; }
   body.theme-jackpot   { background: #1A1024; }
-  body.theme-infinity  { background: #050B14; }
+  body.theme-manuscript {
+    background:
+      repeating-linear-gradient(0deg, rgba(139,58,43,0.09) 0px, rgba(139,58,43,0.09) 1px, transparent 1px, transparent 26px),
+      repeating-linear-gradient(90deg, rgba(139,58,43,0.09) 0px, rgba(139,58,43,0.09) 1px, transparent 1px, transparent 26px),
+      #F3E9D8;
+  }
   body.theme-dark      { background: #12151C; }
 
   .cr-root.theme-pink, .cr-overlay.theme-pink,
   .cr-root.theme-retro, .cr-overlay.theme-retro,
+  .cr-root.theme-manuscript, .cr-overlay.theme-manuscript,
   .cr-root.theme-glass, .cr-overlay.theme-glass {
     --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
     --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
@@ -172,7 +178,6 @@
   .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk,
   .cr-root.theme-matrix, .cr-overlay.theme-matrix,
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot,
-  .cr-root.theme-infinity, .cr-overlay.theme-infinity,
   .cr-root.theme-dark, .cr-overlay.theme-dark {
     --wait-ink:#E7EAF0; --consult:#5B8DEF; --consult-bg:#1E2A42; --done:#E8A552; --done-bg:#3A2C16;
     --discharge-bg:#2A2F3B; --discharge-ink:#9AA3B5; --anomaly:#F080B3; --anomaly-bg:#3A2030;
@@ -191,7 +196,7 @@
   .cr-root.theme-retro, .cr-overlay.theme-retro {
     --bg:#C0C0C0; --panel:#C0C0C0; --ink:#000000; --muted:#4B4B4B; --line:#808080;
     --accent:#000080; --accent-dim:#D4D0C8;
-    font-family: 'Nanum Myeongjo', serif;
+    font-family: '굴림', Gulim, Dotum, sans-serif;
   }
   /* 444: 리퀴드 글라스 — 반투명 유리 재질 + 배경 그라데이션이 은은히 비침 */
   .cr-root.theme-glass, .cr-overlay.theme-glass {
@@ -204,16 +209,17 @@
     --bg: rgba(0,8,0,0.55); --panel: rgba(0,14,0,0.68);
     --ink:#00FF41; --muted:#00B32C; --line: rgba(0,255,65,0.3);
     --accent:#00FF41; --accent-dim: rgba(0,255,65,0.15);
-    font-family: 'Nanum Myeongjo', serif;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
   }
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot {
     --bg:#1A1024; --panel:#241633; --ink:#F5E6C8; --muted:#B39A6B; --line:#3A2A50;
     --accent:#F2C230; --accent-dim:#3A2E14;
   }
-  /* 888: 옆으로 눕히면 무한대(∞) 기호 — 인피니티 갤럭시 컨셉 */
-  .cr-root.theme-infinity, .cr-overlay.theme-infinity {
-    --bg:#050B14; --panel:#0C1A2B; --ink:#DCEEF7; --muted:#6C93AD; --line:#173049;
-    --accent:#22D3EE; --accent-dim:#0F2A3A;
+  /* 888: 원고지 문학·가을 — 세로줄 노트 배경 + 나눔명조 */
+  .cr-root.theme-manuscript, .cr-overlay.theme-manuscript {
+    --bg:#F3E9D8; --panel:#FBF5E9; --ink:#3B2A1E; --muted:#8A6F52; --line:#C9B896;
+    --accent:#8B3A2B; --accent-dim:#EAD9C9;
+    font-family: 'Nanum Myeongjo', serif;
   }
   .cr-root.theme-dark, .cr-overlay.theme-dark {
     --bg:#12151C; --panel:#1B1F29; --ink:#E7EAF0; --muted:#8B95A8; --line:#2A2F3B;
@@ -259,7 +265,7 @@
   .theme-retro .cr-card.st-discharge { border-color: var(--discharge-ink) !important; }
   .theme-retro .cr-card.st-anomaly   { border-color: var(--anomaly) !important; }
   .theme-retro .cr-status-dot { border-radius: 50% !important; }
-  .theme-retro .cr-mono, .theme-retro .cr-us-time { font-family: 'Nanum Myeongjo', serif !important; letter-spacing: 0 !important; }
+  .theme-retro .cr-mono, .theme-retro .cr-us-time { font-family: '굴림', Gulim, Dotum, sans-serif !important; letter-spacing: 0 !important; }
   /* Galmuri11은 비트맵 폰트라 원래 크기에서 가장 또렷하게 보임 — 별도 확대/축소 없이 기본 크기 유지 */
 
   /* 666: 매트릭스 — 반투명 검정판 위로 초록 디지털 레인이 은은히 비침 */
@@ -274,9 +280,20 @@
     -webkit-backdrop-filter: blur(3px);
   }
   .theme-matrix .cr-btn-primary { color:#000; }
-  .theme-matrix .cr-mono, .theme-matrix .cr-us-time { font-family: 'Nanum Myeongjo', serif !important; letter-spacing: 0 !important; }
-  .theme-matrix .cr-title, .theme-matrix .cr-card-name {
+  .theme-matrix .cr-mono, .theme-matrix .cr-us-time { font-family: 'Share Tech Mono', 'Courier New', monospace !important; letter-spacing: 0 !important; }
+  .theme-manuscript .cr-mono, .theme-manuscript .cr-us-time { font-family: 'Nanum Myeongjo', serif !important; letter-spacing: 0 !important; }
+  .theme-matrix .cr-card-name {
     text-shadow: 0 0 5px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+  .theme-matrix .cr-title {
+    animation: cr-glitch 2.6s infinite steps(1);
+  }
+  @keyframes cr-glitch {
+    0%, 92%, 100% { text-shadow: 2px 0 #ff2b4d, -2px 0 #00fff9; transform: translate(0,0); }
+    93% { text-shadow: -3px 0 #ff2b4d, 3px 0 #00fff9; transform: translate(-1px,0); }
+    94% { text-shadow: 3px 1px #ff2b4d, -3px -1px #00fff9; transform: translate(1px,0); }
+    95% { text-shadow: -2px -1px #ff2b4d, 2px 1px #00fff9; transform: translate(0,-1px); }
+    96% { text-shadow: 2px 0 #ff2b4d, -2px 0 #00fff9; transform: translate(0,0); }
   }
 
   /* 리퀴드 글라스 — 블러 + 반투명 */
@@ -393,7 +410,7 @@
     '555': 'retro',
     '666': 'matrix',
     '777': 'jackpot',
-    '888': 'infinity',
+    '888': 'manuscript',
     '999': 'dark'
   };
 
