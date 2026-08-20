@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>안내중앙 라우팅 보드</title>
+<title>이울 중앙안내 환자 시트</title>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <style>
@@ -98,6 +98,7 @@
   .cr-us-name { flex:1; font-weight:700; }
   .cr-us-badge { font-size:10px; font-weight:800; color:var(--anomaly); background:#fff; padding:2px 6px; border-radius:5px; }
   .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; }
+  .cr-footer { text-align:center; margin-top:22px; padding-top:14px; border-top:1px solid var(--line); font-size:10.5px; color:var(--muted); letter-spacing:0.3px; }
   .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
   .cr-mini-panel h4 { margin:0 0 8px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px; }
   .cr-mini-list { display:flex; flex-wrap:wrap; gap:6px; }
@@ -877,7 +878,7 @@
 
     app.innerHTML =
       '<div class="cr-topbar">'
-      + '<div class="cr-title">안내중앙 라우팅 보드<small>미니차트 배정 · 진료실 대기 현황</small></div>'
+      + '<div class="cr-title">이울 중앙안내 환자 시트<small>미니차트 배정 · 진료실 대기 현황</small></div>'
       + '<div class="cr-topbtns">'
       + '<button class="cr-btn cr-btn-ghost" id="cr-add-room">+ 진료실</button>'
       + '<button class="cr-btn cr-btn-primary" id="cr-add-patient">+ 환자 등록</button>'
@@ -903,7 +904,8 @@
       + '</div>'
       + '<div class="cr-mini-panel"><h4>⚠️ 이상상태 ('+anomaly.length+')</h4>'
       + (anomaly.length ? '<div class="cr-mini-list">'+anomaly.map(p=>'<span class="cr-mini-chip anomaly" data-open="'+p.id+'">'+esc(p.name)+' #'+esc(p.patientNo)+'</span>').join('')+'</div>' : '<div class="cr-empty-note">없음</div>')
-      + '</div></div>';
+      + '</div></div>'
+      + '<div class="cr-footer">Made by 이울 59기 김재서 · All rights reserved</div>';
 
     bindBoardEvents();
     if (modal) renderModal(); else removeModal();
