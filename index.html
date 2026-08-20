@@ -145,19 +145,26 @@
   body.theme-pink      { background: #FFF0F5; }
   body.theme-cyberpunk { background: #050505; }
   body.theme-party     { background: #FFFCF0; }
-  body.theme-ghost     { background: #1A1625; }
+  body.theme-glass      {
+    background:
+      radial-gradient(circle at 12% 18%, #FFB4E0 0%, transparent 42%),
+      radial-gradient(circle at 88% 12%, #9FDFFF 0%, transparent 42%),
+      radial-gradient(circle at 50% 90%, #C9B6FF 0%, transparent 46%),
+      radial-gradient(circle at 92% 82%, #B9FFE0 0%, transparent 42%),
+      #EEF0F5;
+  }
   body.theme-hellfire  { background: #140505; }
   body.theme-jackpot   { background: #1A1024; }
   body.theme-infinity  { background: #050B14; }
   body.theme-dark      { background: #12151C; }
 
   .cr-root.theme-pink, .cr-overlay.theme-pink,
-  .cr-root.theme-party, .cr-overlay.theme-party {
+  .cr-root.theme-party, .cr-overlay.theme-party,
+  .cr-root.theme-glass, .cr-overlay.theme-glass {
     --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
     --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
   }
   .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk,
-  .cr-root.theme-ghost, .cr-overlay.theme-ghost,
   .cr-root.theme-hellfire, .cr-overlay.theme-hellfire,
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot,
   .cr-root.theme-infinity, .cr-overlay.theme-infinity,
@@ -179,9 +186,11 @@
     --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
     --accent:#FF5C8A; --accent-dim:#FFE0EA;
   }
-  .cr-root.theme-ghost, .cr-overlay.theme-ghost {
-    --bg:#1A1625; --panel:#241E33; --ink:#D8D3E8; --muted:#8A82A3; --line:#3A3350;
-    --accent:#8B6FD6; --accent-dim:#2E2748;
+  /* 444: 리퀴드 글라스 — 반투명 유리 재질 + 배경 그라데이션이 은은히 비침 */
+  .cr-root.theme-glass, .cr-overlay.theme-glass {
+    --bg: rgba(255,255,255,0.30); --panel: rgba(255,255,255,0.55);
+    --ink:#1E2233; --muted:#5C6478; --line: rgba(255,255,255,0.55);
+    --accent:#0A84FF; --accent-dim: rgba(10,132,255,0.14);
   }
   .cr-root.theme-hellfire, .cr-overlay.theme-hellfire {
     --bg:#140505; --panel:#1F0A0A; --ink:#F5D9D9; --muted:#B36B6B; --line:#3A1414;
@@ -206,6 +215,30 @@
   .themed .cr-chip.cur:not(.consult) { background: var(--panel) !important; }
   .themed input, .themed select, .themed textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
   .themed .cr-check-pill .cr-box { color: var(--panel); }
+
+  /* 리퀴드 글라스 — 블러 + 반투명 */
+  .theme-glass.cr-root, .theme-glass.cr-overlay {
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+  }
+  .theme-glass .cr-card, .theme-glass .cr-col, .theme-glass .cr-modal, .theme-glass .cr-mini-panel,
+  .theme-glass .cr-check-pill, .theme-glass .cr-search-input,
+  .theme-glass input, .theme-glass select, .theme-glass textarea {
+    background: var(--panel) !important;
+    backdrop-filter: blur(14px) saturate(150%);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.5) !important;
+    box-shadow: 0 4px 16px rgba(31,38,60,0.08), inset 0 1px 0 rgba(255,255,255,0.55);
+  }
+  .theme-glass .cr-btn-primary {
+    box-shadow: 0 4px 12px rgba(10,132,255,0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .theme-glass .cr-btn-ghost {
+    background: rgba(255,255,255,0.4) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.5);
+  }
 
   /* 사이버펑크 네온 글로우 테두리 (은은하게 — 텍스트 가독성 우선) */
   .theme-cyberpunk .cr-col, .theme-cyberpunk .cr-modal, .theme-cyberpunk .cr-mini-panel {
@@ -286,7 +319,7 @@
     '000': 'light',
     '222': 'pink',
     '333': 'cyberpunk',
-    '444': 'ghost',
+    '444': 'glass',
     '555': 'party',
     '666': 'hellfire',
     '777': 'jackpot',
