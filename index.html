@@ -139,31 +139,70 @@
   .cr-toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:700; z-index:100; opacity:0; transition:opacity .25s ease; pointer-events:none;}
   .cr-toast.show { opacity:1; }
 
-  /* 🌙 다크모드 이스터에그 */
-  body.dark { background: #12151C; }
-  .cr-root.dark, .cr-overlay.dark {
-    --bg: #12151C;
-    --panel: #1B1F29;
-    --ink: #E7EAF0;
-    --muted: #8B95A8;
-    --line: #2A2F3B;
-    --accent: #5B8DEF;
-    --accent-dim: #1E2A42;
-    --wait-ink: #E7EAF0;
-    --consult: #5B8DEF;
-    --consult-bg: #1E2A42;
-    --done: #E8A552;
-    --done-bg: #3A2C16;
-    --discharge-bg: #2A2F3B;
-    --discharge-ink: #9AA3B5;
-    --anomaly: #F080B3;
-    --anomaly-bg: #3A2030;
+  /* 🎨 숫자 테마 이스터에그 (222~999) */
+  body.theme-pink     { background: #FFF0F5; }
+  body.theme-sunset    { background: #FFF4E8; }
+  body.theme-ghost     { background: #1A1625; }
+  body.theme-party     { background: #FFFCF0; }
+  body.theme-hellfire  { background: #140505; }
+  body.theme-jackpot   { background: #1A1024; }
+  body.theme-fortune   { background: #0E1F16; }
+  body.theme-dark      { background: #12151C; }
+
+  .cr-root.theme-pink, .cr-overlay.theme-pink {
+    --bg:#FFF0F5; --panel:#FFFFFF; --ink:#5C2A3D; --muted:#B87A96; --line:#F5C6D9;
+    --accent:#E8578A; --accent-dim:#FCE0EB; --wait-ink:#5C2A3D; --consult:#E8578A; --consult-bg:#FCE0EB;
+    --done:#D6336C; --done-bg:#FBD5E5; --discharge-bg:#F0D6E0; --discharge-ink:#8A5570;
+    --anomaly:#C2185B; --anomaly-bg:#F8C9DC;
   }
-  .dark .cr-search-input, .dark .cr-card, .dark .cr-us-row, .dark .cr-us-badge,
-  .dark .cr-modal, .dark .cr-check-pill, .dark .cr-dept-tag.current-w,
-  .dark .cr-chip.cur { background: var(--panel) !important; }
-  .dark input, .dark select, .dark textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
-  .dark .cr-check-pill .cr-box { color: var(--panel); }
+  .cr-root.theme-sunset, .cr-overlay.theme-sunset {
+    --bg:#FFF4E8; --panel:#FFFFFF; --ink:#5A2A12; --muted:#C08050; --line:#F5D3A8;
+    --accent:#F2711F; --accent-dim:#FCE3C7; --wait-ink:#5A2A12; --consult:#D6336C; --consult-bg:#FBD9C7;
+    --done:#B23A1F; --done-bg:#F7DCC9; --discharge-bg:#EFD8C0; --discharge-ink:#8A5E3C;
+    --anomaly:#9B1B4C; --anomaly-bg:#F3C9D9;
+  }
+  .cr-root.theme-ghost, .cr-overlay.theme-ghost {
+    --bg:#1A1625; --panel:#241E33; --ink:#D8D3E8; --muted:#8A82A3; --line:#3A3350;
+    --accent:#8B6FD6; --accent-dim:#2E2748; --wait-ink:#D8D3E8; --consult:#8B6FD6; --consult-bg:#2E2748;
+    --done:#5FB89C; --done-bg:#1E3A32; --discharge-bg:#332C47; --discharge-ink:#9A93B3;
+    --anomaly:#B36FD6; --anomaly-bg:#3A2748;
+  }
+  .cr-root.theme-party, .cr-overlay.theme-party {
+    --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
+    --accent:#FF5C8A; --accent-dim:#FFE0EA; --wait-ink:#332B00; --consult:#3DBEFF; --consult-bg:#D6F0FF;
+    --done:#FFB627; --done-bg:#FFF0CF; --discharge-bg:#E8E2C8; --discharge-ink:#7A7040;
+    --anomaly:#9B5CFF; --anomaly-bg:#EBE0FF;
+  }
+  .cr-root.theme-hellfire, .cr-overlay.theme-hellfire {
+    --bg:#140505; --panel:#1F0A0A; --ink:#F5D9D9; --muted:#B36B6B; --line:#3A1414;
+    --accent:#E8383A; --accent-dim:#3A1414; --wait-ink:#F5D9D9; --consult:#E8383A; --consult-bg:#3A1414;
+    --done:#FF7A1F; --done-bg:#3A2410; --discharge-bg:#2A1414; --discharge-ink:#9A6B6B;
+    --anomaly:#FF2E63; --anomaly-bg:#3A1424;
+  }
+  .cr-root.theme-jackpot, .cr-overlay.theme-jackpot {
+    --bg:#1A1024; --panel:#241633; --ink:#F5E6C8; --muted:#B39A6B; --line:#3A2A50;
+    --accent:#F2C230; --accent-dim:#3A2E14; --wait-ink:#F5E6C8; --consult:#B98BE8; --consult-bg:#2E2148;
+    --done:#F2C230; --done-bg:#3A2E14; --discharge-bg:#332747; --discharge-ink:#9A8AB3;
+    --anomaly:#E85CA8; --anomaly-bg:#3A1E38;
+  }
+  .cr-root.theme-fortune, .cr-overlay.theme-fortune {
+    --bg:#0E1F16; --panel:#153327; --ink:#E6F5EC; --muted:#7FB399; --line:#1F4A38;
+    --accent:#F2C230; --accent-dim:#2A3E20; --wait-ink:#E6F5EC; --consult:#3DD68C; --consult-bg:#153A2A;
+    --done:#F2C230; --done-bg:#3A2E14; --discharge-bg:#1A3328; --discharge-ink:#6FA98A;
+    --anomaly:#FF6B6B; --anomaly-bg:#3A1414;
+  }
+  .cr-root.theme-dark, .cr-overlay.theme-dark {
+    --bg:#12151C; --panel:#1B1F29; --ink:#E7EAF0; --muted:#8B95A8; --line:#2A2F3B;
+    --accent:#5B8DEF; --accent-dim:#1E2A42; --wait-ink:#E7EAF0; --consult:#5B8DEF; --consult-bg:#1E2A42;
+    --done:#E8A552; --done-bg:#3A2C16; --discharge-bg:#2A2F3B; --discharge-ink:#9AA3B5;
+    --anomaly:#F080B3; --anomaly-bg:#3A2030;
+  }
+
+  .themed .cr-search-input, .themed .cr-card, .themed .cr-us-row, .themed .cr-us-badge,
+  .themed .cr-modal, .themed .cr-check-pill, .themed .cr-dept-tag.current-w,
+  .themed .cr-chip.cur { background: var(--panel) !important; }
+  .themed input, .themed select, .themed textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+  .themed .cr-check-pill .cr-box { color: var(--panel); }
 </style>
 
 </head>
@@ -208,13 +247,39 @@
   let undoStack = [];
   let roomDraftDept = '';
   let lastRoomAddedDept = '';
-  let darkMode = false;
+  let currentTheme = 'light';
+  const THEME_TABLE = {
+    '000': { key: 'light',    label: '☀️ 라이트모드로 복귀' },
+    '222': { key: 'pink',     label: '💗 발렌타인 핑크 발견!' },
+    '333': { key: 'sunset',   label: '🌇 선셋 오렌지 발견!' },
+    '444': { key: 'ghost',    label: '👻 으스스 고스트 발견!' },
+    '555': { key: 'party',    label: '🎉 파티 모드 발견! (태국어로 555=하하하)' },
+    '666': { key: 'hellfire', label: '😈 지옥불 모드 발견!' },
+    '777': { key: 'jackpot',  label: '🎰 잭팟 골드 발견!' },
+    '888': { key: 'fortune',  label: '💰 대박 머니 그린 발견!' },
+    '999': { key: 'dark',     label: '🌙 다크모드 발견!' }
+  };
 
-  function toggleDarkModeEasterEgg(){
-    darkMode = !darkMode;
-    document.body.classList.toggle('dark', darkMode);
-    toast(darkMode ? '🌙 다크모드 발견!' : '☀️ 라이트모드로 복귀');
+  function applyTheme(){
+    document.body.className = currentTheme !== 'light' ? 'themed theme-' + currentTheme : '';
     render();
+  }
+
+  function triggerThemeEasterEgg(code){
+    const entry = THEME_TABLE[code];
+    if (!entry) return false;
+    if (entry.key === 'light'){
+      currentTheme = 'light';
+      toast('☀️ 라이트모드로 복귀');
+    } else if (currentTheme === entry.key){
+      currentTheme = 'light';
+      toast('☀️ 라이트모드로 복귀');
+    } else {
+      currentTheme = entry.key;
+      toast(entry.label);
+    }
+    applyTheme();
+    return true;
   }
 
   const PRESET_DEPTS = ['내과','정형외과','만물부','치과','초음파','랩부','약국부'];
@@ -872,7 +937,7 @@
 
   function render(){
     const app = document.getElementById('cr-app');
-    app.className = 'cr-root' + (darkMode ? ' dark' : '');
+    app.className = 'cr-root' + (currentTheme !== 'light' ? ' themed theme-' + currentTheme : '');
     if (!loaded){ app.innerHTML = '<div style="padding:40px;text-align:center;color:#7C8798;font-size:13px;">불러오는 중…</div>'; return; }
 
     const depts = deptList();
@@ -979,7 +1044,7 @@
   function renderModal(){
     removeModal();
     const overlay = document.createElement('div');
-    overlay.className = 'cr-overlay' + (darkMode ? ' dark' : '');
+    overlay.className = 'cr-overlay' + (currentTheme !== 'light' ? ' themed theme-' + currentTheme : '');
     overlay.onclick = (e) => { if (e.target === overlay && !pendingRxAsk) closeModalSafely(); };
 
     let inner = '';
@@ -1251,7 +1316,7 @@
         const usTimeEl = document.getElementById('cr-np-us-time');
         const usTime = usTimeEl ? usTimeEl.value : '';
         if (!no.trim() || !name.trim()) { toast('환자번호와 이름을 입력해주세요'); return; }
-        if (no.trim() === '999') { modal = null; toggleDarkModeEasterEgg(); return; }
+        if (THEME_TABLE[no.trim()]) { modal = null; triggerThemeEasterEgg(no.trim()); return; }
         if (selected.length === 0) { toast('필요한 부서를 1개 이상 선택해주세요'); return; }
         const ok = addPatient(no, name, selected, usTime);
         if (ok) { modal = null; render(); }
