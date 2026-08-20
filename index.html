@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <style>
   body { margin:0; background:#F5F7FA; }
   .cr-root, .cr-overlay {
@@ -190,7 +191,7 @@
   .cr-root.theme-retro, .cr-overlay.theme-retro {
     --bg:#C0C0C0; --panel:#C0C0C0; --ink:#000000; --muted:#4B4B4B; --line:#808080;
     --accent:#000080; --accent-dim:#D4D0C8;
-    font-family: 'VT323', Tahoma, monospace;
+    font-family: 'Galmuri11', 'VT323', monospace;
   }
   /* 444: 리퀴드 글라스 — 반투명 유리 재질 + 배경 그라데이션이 은은히 비침 */
   .cr-root.theme-glass, .cr-overlay.theme-glass {
@@ -255,13 +256,8 @@
   .theme-retro .cr-card.st-discharge { border-color: var(--discharge-ink) !important; }
   .theme-retro .cr-card.st-anomaly   { border-color: var(--anomaly) !important; }
   .theme-retro .cr-status-dot { border-radius: 50% !important; }
-  .theme-retro .cr-mono, .theme-retro .cr-us-time { font-family: 'VT323', monospace !important; letter-spacing: 0 !important; }
-  /* VT323는 큼직하게 나오는 폰트라 전체적으로 살짝만 낮춤 */
-  .theme-retro .cr-chip, .theme-retro .cr-card-no, .theme-retro .cr-card-status,
-  .theme-retro .cr-us-time, .theme-retro .cr-dept-tag, .theme-retro .cr-mini-chip,
-  .theme-retro .cr-legend { font-size: 12px !important; letter-spacing: 0.2px; }
-  .theme-retro .cr-card-name { font-size: 14px !important; }
-  .theme-retro .cr-btn { font-size: 13px !important; }
+  .theme-retro .cr-mono, .theme-retro .cr-us-time { font-family: 'Galmuri11', monospace !important; letter-spacing: 0 !important; }
+  /* Galmuri11은 비트맵 폰트라 원래 크기에서 가장 또렷하게 보임 — 별도 확대/축소 없이 기본 크기 유지 */
 
   /* 리퀴드 글라스 — 블러 + 반투명 */
   .theme-glass.cr-root, .theme-glass.cr-overlay {
