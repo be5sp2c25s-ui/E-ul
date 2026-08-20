@@ -138,9 +138,34 @@
 
   .cr-toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:700; z-index:100; opacity:0; transition:opacity .25s ease; pointer-events:none;}
   .cr-toast.show { opacity:1; }
+
+  /* 🌙 다크모드 이스터에그 */
+  body.dark { background: #12151C; }
+  .cr-root.dark, .cr-overlay.dark {
+    --bg: #12151C;
+    --panel: #1B1F29;
+    --ink: #E7EAF0;
+    --muted: #8B95A8;
+    --line: #2A2F3B;
+    --accent: #5B8DEF;
+    --accent-dim: #1E2A42;
+    --wait-ink: #E7EAF0;
+    --consult: #5B8DEF;
+    --consult-bg: #1E2A42;
+    --done: #E8A552;
+    --done-bg: #3A2C16;
+    --discharge-bg: #2A2F3B;
+    --discharge-ink: #9AA3B5;
+    --anomaly: #F080B3;
+    --anomaly-bg: #3A2030;
+  }
+  .dark .cr-search-input, .dark .cr-card, .dark .cr-us-row, .dark .cr-us-badge,
+  .dark .cr-modal, .dark .cr-check-pill, .dark .cr-dept-tag.current-w,
+  .dark .cr-chip.cur { background: var(--panel) !important; }
+  .dark input, .dark select, .dark textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+  .dark .cr-check-pill .cr-box { color: var(--panel); }
 </style>
 
-</style>
 </head>
 <body>
 
@@ -183,6 +208,14 @@
   let undoStack = [];
   let roomDraftDept = '';
   let lastRoomAddedDept = '';
+  let darkMode = false;
+
+  function toggleDarkModeEasterEgg(){
+    darkMode = !darkMode;
+    document.body.classList.toggle('dark', darkMode);
+    toast(darkMode ? '🌙 다크모드 발견!' : '☀️ 라이트모드로 복귀');
+    render();
+  }
 
   const PRESET_DEPTS = ['내과','정형외과','만물부','치과','초음파','랩부','약국부'];
 
@@ -839,6 +872,7 @@
 
   function render(){
     const app = document.getElementById('cr-app');
+    app.className = 'cr-root' + (darkMode ? ' dark' : '');
     if (!loaded){ app.innerHTML = '<div style="padding:40px;text-align:center;color:#7C8798;font-size:13px;">불러오는 중…</div>'; return; }
 
     const depts = deptList();
@@ -945,7 +979,7 @@
   function renderModal(){
     removeModal();
     const overlay = document.createElement('div');
-    overlay.className = 'cr-overlay';
+    overlay.className = 'cr-overlay' + (darkMode ? ' dark' : '');
     overlay.onclick = (e) => { if (e.target === overlay && !pendingRxAsk) closeModalSafely(); };
 
     let inner = '';
@@ -1217,6 +1251,7 @@
         const usTimeEl = document.getElementById('cr-np-us-time');
         const usTime = usTimeEl ? usTimeEl.value : '';
         if (!no.trim() || !name.trim()) { toast('환자번호와 이름을 입력해주세요'); return; }
+        if (no.trim() === '999') { modal = null; toggleDarkModeEasterEgg(); return; }
         if (selected.length === 0) { toast('필요한 부서를 1개 이상 선택해주세요'); return; }
         const ok = addPatient(no, name, selected, usTime);
         if (ok) { modal = null; render(); }
