@@ -142,21 +142,21 @@
   /* 🎨 숫자 테마 이스터에그 (222~999)
      상태색(대기/진료중/완료/귀가/이상)은 배경이 밝은 테마 vs 어두운 테마
      딱 두 세트만 써서 항상 같은 의미로 인식되도록 고정 — 테마별로 안 바뀜 */
-  body.theme-pink     { background: #FFF0F5; }
-  body.theme-sunset   { background: #FFF4E8; }
-  body.theme-party    { background: #FFFCF0; }
-  body.theme-ghost    { background: #1A1625; }
-  body.theme-hellfire { background: #140505; }
-  body.theme-jackpot  { background: #1A1024; }
-  body.theme-infinity { background: #050B14; }
-  body.theme-dark     { background: #12151C; }
+  body.theme-pink      { background: #FFF0F5; }
+  body.theme-cyberpunk { background: #0A0014; }
+  body.theme-party     { background: #FFFCF0; }
+  body.theme-ghost     { background: #1A1625; }
+  body.theme-hellfire  { background: #140505; }
+  body.theme-jackpot   { background: #1A1024; }
+  body.theme-infinity  { background: #050B14; }
+  body.theme-dark      { background: #12151C; }
 
   .cr-root.theme-pink, .cr-overlay.theme-pink,
-  .cr-root.theme-sunset, .cr-overlay.theme-sunset,
   .cr-root.theme-party, .cr-overlay.theme-party {
     --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
     --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
   }
+  .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk,
   .cr-root.theme-ghost, .cr-overlay.theme-ghost,
   .cr-root.theme-hellfire, .cr-overlay.theme-hellfire,
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot,
@@ -170,9 +170,10 @@
     --bg:#FFF0F5; --panel:#FFFFFF; --ink:#5C2A3D; --muted:#B87A96; --line:#F5C6D9;
     --accent:#E8578A; --accent-dim:#FCE0EB;
   }
-  .cr-root.theme-sunset, .cr-overlay.theme-sunset {
-    --bg:#FFF4E8; --panel:#FFFFFF; --ink:#5A2A12; --muted:#C08050; --line:#F5D3A8;
-    --accent:#F2711F; --accent-dim:#FCE3C7;
+  /* 333: 사이버펑크 네온 — 짙은 배경 + 시안/마젠타 네온 테두리 글로우 */
+  .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk {
+    --bg:#0A0014; --panel:#140022; --ink:#F0E6FF; --muted:#9B7FC4; --line:#3D1F5C;
+    --accent:#00F0FF; --accent-dim:#0F2A3A;
   }
   .cr-root.theme-party, .cr-overlay.theme-party {
     --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
@@ -205,6 +206,31 @@
   .themed .cr-chip.cur:not(.consult) { background: var(--panel) !important; }
   .themed input, .themed select, .themed textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
   .themed .cr-check-pill .cr-box { color: var(--panel); }
+
+  /* 사이버펑크 네온 글로우 테두리 */
+  .theme-cyberpunk .cr-col, .theme-cyberpunk .cr-modal, .theme-cyberpunk .cr-mini-panel {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 10px rgba(0,240,255,0.35), inset 0 0 16px rgba(0,240,255,0.04);
+  }
+  .theme-cyberpunk .cr-card {
+    box-shadow: 0 0 6px rgba(0,240,255,0.2), 0 0 2px rgba(255,46,154,0.25);
+  }
+  .theme-cyberpunk .cr-btn-primary {
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .theme-cyberpunk .cr-title {
+    text-shadow: 0 0 8px rgba(0,240,255,0.6);
+  }
+
+  /* 222 발렌타인: 떨어지는 하트 */
+  #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  #cr-hearts span { position:absolute; top:-10%; will-change:transform,opacity; }
+  @keyframes cr-heart-fall {
+    0%   { transform: translateY(-10vh) rotate(0deg);   opacity:0; }
+    10%  { opacity:0.9; }
+    90%  { opacity:0.9; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity:0; }
+  }
 </style>
 
 </head>
@@ -253,7 +279,7 @@
   const THEME_TABLE = {
     '000': 'light',
     '222': 'pink',
-    '333': 'sunset',
+    '333': 'cyberpunk',
     '444': 'ghost',
     '555': 'party',
     '666': 'hellfire',
@@ -262,8 +288,32 @@
     '999': 'dark'
   };
 
+  function renderHearts(){
+    let el = document.getElementById('cr-hearts');
+    if (currentTheme !== 'pink'){
+      if (el) el.remove();
+      return;
+    }
+    if (el) return; // 이미 떠 있으면 재생성해서 애니메이션 끊기지 않게 둠
+    el = document.createElement('div');
+    el.id = 'cr-hearts';
+    const emojis = ['💗','💕','💖','💘'];
+    let html = '';
+    for (let i = 0; i < 14; i++){
+      const left = Math.random() * 100;
+      const delay = Math.random() * 6;
+      const duration = 5 + Math.random() * 4;
+      const size = 14 + Math.random() * 10;
+      const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+      html += '<span style="left:'+left+'%;font-size:'+size+'px;animation:cr-heart-fall '+duration+'s linear '+delay+'s infinite;">'+emoji+'</span>';
+    }
+    el.innerHTML = html;
+    document.body.appendChild(el);
+  }
+
   function applyTheme(){
     document.body.className = currentTheme !== 'light' ? 'themed theme-' + currentTheme : '';
+    renderHearts();
     render();
   }
 
