@@ -8,7 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Silkscreen&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <style>
   @font-face {
@@ -112,6 +112,26 @@
   .cr-us-badge { font-size:10px; font-weight:800; color:var(--anomaly); background:#fff; padding:2px 6px; border-radius:5px; }
   .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; }
   .cr-easter { position:fixed; right:10px; bottom:8px; font-size:11px; color:var(--line); opacity:0.55; cursor:default; user-select:none; z-index:5; transition:opacity .2s ease, color .2s ease; }
+
+  .cr-anim-toggle { display:none; position:fixed; left:10px; bottom:8px; z-index:6; border:none; background:rgba(0,0,0,0.4); color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:13px; align-items:center; justify-content:center; }
+  body.theme-pink .cr-anim-toggle, body.theme-winter .cr-anim-toggle, body.theme-summer .cr-anim-toggle { display:flex; }
+  body.anim-paused #cr-hearts span, body.anim-paused #cr-snow span, body.anim-paused #cr-bubbles span { animation-play-state: paused !important; }
+  #cr-hearts span, #cr-bubbles span { pointer-events: auto; cursor: pointer; }
+
+  /* 555: PC통신 스타일 실시간 채팅 */
+  .cr-chat-toggle { display:none; position:fixed; right:14px; bottom:44px; z-index:6; width:40px; height:40px; border-radius:50%; border:none; background:#000080; color:#fff; font-size:17px; cursor:pointer; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+  body.theme-retro .cr-chat-toggle { display:flex; }
+  .cr-chat { display:none; flex-direction:column; position:fixed; right:14px; bottom:92px; z-index:7; width:260px; height:300px; background:#000; border:2px outset #E0E0E0; font-family:'DungGeunMo','굴림',Gulim,sans-serif; }
+  .cr-chat-head { background:#000080; color:#fff; font-weight:700; padding:4px 6px; display:flex; align-items:center; justify-content:space-between; flex:none; }
+  .cr-chat-head button { width:16px; height:14px; font-size:9px; line-height:1; background:#C0C0C0; color:#000; border:1px outset #E0E0E0; cursor:pointer; }
+  .cr-chat-messages { flex:1; overflow-y:auto; padding:6px; color:#33FF66; font-size:13px; line-height:1.5; }
+  .cr-chat-msg { margin-bottom:3px; word-break:break-word; }
+  .cr-chat-msg b { color:#7CFFB2; }
+  .cr-chat-input-row { display:flex; gap:3px; padding:5px; background:#C0C0C0; flex:none; }
+  .cr-chat-input-row input { border:2px inset #E0E0E0; font-family:inherit; font-size:12px; padding:3px 4px; }
+  #cr-chat-name { width:52px; flex:none; }
+  #cr-chat-text { flex:1; min-width:0; }
+  .cr-chat-input-row button { border:2px outset #E0E0E0; background:#C0C0C0; font-weight:700; font-size:12px; cursor:pointer; padding:0 8px; }
   .cr-easter:hover { opacity:1; color:var(--muted); }
   .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
   .cr-mini-panel h4 { margin:0 0 8px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px; }
@@ -220,7 +240,7 @@
     --bg: rgba(0,8,0,0.55); --panel: rgba(0,14,0,0.68);
     --ink:#00FF41; --muted:#00B32C; --line: rgba(0,255,65,0.3);
     --accent:#00FF41; --accent-dim: rgba(0,255,65,0.15);
-    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-family: 'Silkscreen', 'Share Tech Mono', monospace;
   }
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot {
     --bg:#1A1024; --panel:#241633; --ink:#F5E6C8; --muted:#B39A6B; --line:#3A2A50;
@@ -323,7 +343,11 @@
     -webkit-backdrop-filter: blur(3px);
   }
   .theme-matrix .cr-btn-primary { color:#000; }
-  .theme-matrix .cr-mono, .theme-matrix .cr-us-time { font-family: 'Share Tech Mono', 'Courier New', monospace !important; letter-spacing: 0 !important; }
+  .theme-matrix .cr-btn { font-family: 'Silkscreen', 'Share Tech Mono', monospace !important; }
+  .theme-matrix input, .theme-matrix select, .theme-matrix textarea {
+    font-family: 'Silkscreen', 'Share Tech Mono', monospace !important;
+  }
+  .theme-matrix .cr-mono, .theme-matrix .cr-us-time { font-family: 'Silkscreen', 'Share Tech Mono', monospace !important; letter-spacing: 0 !important; }
   .theme-manuscript .cr-mono, .theme-manuscript .cr-us-time { font-family: 'Nanum Myeongjo', serif !important; letter-spacing: 0 !important; }
   .theme-matrix .cr-card-name {
     text-shadow: 0 0 5px color-mix(in srgb, var(--accent) 60%, transparent);
@@ -448,6 +472,18 @@
 
 <div id="cr-app" class="cr-root"></div>
 <div class="cr-easter" title="이울 59기 김재서 제작">·</div>
+<button id="cr-anim-toggle" class="cr-anim-toggle" title="움직이는 효과 켜기/끄기">⏸</button>
+
+<button id="cr-chat-toggle" class="cr-chat-toggle" title="PC통신 채팅">💬</button>
+<div id="cr-chat" class="cr-chat">
+  <div class="cr-chat-head">📟 PC통신 채팅<button id="cr-chat-close">_</button></div>
+  <div id="cr-chat-messages" class="cr-chat-messages"></div>
+  <div class="cr-chat-input-row">
+    <input id="cr-chat-name" placeholder="닉네임" maxlength="12"/>
+    <input id="cr-chat-text" placeholder="메시지 입력..." maxlength="200"/>
+    <button id="cr-chat-send">전송</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -486,6 +522,7 @@
   let roomDraftDept = '';
   let lastRoomAddedDept = '';
   let currentTheme = 'light';
+  let animPaused = false;
   const THEME_TABLE = {
     '000': 'light',
     '222': 'pink',
@@ -497,6 +534,15 @@
     '888': 'manuscript',
     '999': 'dark'
   };
+
+  function popElement(target){
+    target.style.animation = 'none';
+    target.style.transition = 'transform .22s ease, opacity .22s ease';
+    target.style.transform = 'scale(1.7)';
+    target.style.opacity = '0';
+    target.style.pointerEvents = 'none';
+    setTimeout(() => { if (target && target.parentElement) target.remove(); }, 230);
+  }
 
   function renderHearts(){
     let el = document.getElementById('cr-hearts');
@@ -518,6 +564,9 @@
       html += '<span style="left:'+left+'%;font-size:'+size+'px;animation:cr-heart-fall '+duration+'s linear '+delay+'s infinite;">'+emoji+'</span>';
     }
     el.innerHTML = html;
+    el.addEventListener('click', (e) => {
+      if (e.target.tagName === 'SPAN' && e.target.parentElement === el) popElement(e.target);
+    });
     document.body.appendChild(el);
   }
 
@@ -603,11 +652,15 @@
       html += '<span class="circ" style="left:'+left+'%;width:'+size+'px;height:'+size+'px;animation:cr-bubble-rise '+duration+'s linear '+delay+'s infinite;"></span>';
     }
     el.innerHTML = html;
+    el.addEventListener('click', (e) => {
+      if (e.target.tagName === 'SPAN' && e.target.parentElement === el) popElement(e.target);
+    });
     document.body.appendChild(el);
   }
 
   function applyTheme(){
     document.body.className = currentTheme !== 'light' ? 'themed theme-' + currentTheme : '';
+    if (animPaused) document.body.classList.add('anim-paused');
     renderHearts();
     renderMatrixRain();
     renderSnow();
@@ -1736,6 +1789,66 @@
         updatePatientInfo(id, no, name);
       });
     }
+  }
+
+  const animToggleBtn = document.getElementById('cr-anim-toggle');
+  if (animToggleBtn) animToggleBtn.onclick = () => {
+    animPaused = !animPaused;
+    document.body.classList.toggle('anim-paused', animPaused);
+    animToggleBtn.textContent = animPaused ? '▶' : '⏸';
+  };
+
+  // ---------- 555 PC통신 채팅 (Firebase 실시간) ----------
+  let chatMessages = [];
+  let chatOpen = false;
+
+  function escChat(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  function renderChatPanel(){
+    const box = document.getElementById('cr-chat-messages');
+    if (!box) return;
+    box.innerHTML = chatMessages.map(m =>
+      '<div class="cr-chat-msg"><b>'+escChat(m.name)+'</b>: '+escChat(m.text)+'</div>'
+    ).join('') || '<div class="cr-chat-msg" style="opacity:.6;">아직 대화가 없습니다</div>';
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function sendChatMessage(){
+    const nameEl = document.getElementById('cr-chat-name');
+    const textEl = document.getElementById('cr-chat-text');
+    const name = (nameEl.value || '익명').trim().slice(0, 12);
+    const text = textEl.value.trim().slice(0, 200);
+    if (!text) return;
+    if (!firebaseReady || !db) { toast('채팅 연결이 안 되어 있습니다'); return; }
+    db.ref('clinic-router-chat').push({ name, text, ts: Date.now() });
+    textEl.value = '';
+    textEl.focus();
+  }
+
+  function toggleChatPanel(){
+    chatOpen = !chatOpen;
+    const panel = document.getElementById('cr-chat');
+    if (panel) panel.style.display = chatOpen ? 'flex' : 'none';
+    if (chatOpen) renderChatPanel();
+  }
+
+  const chatToggleBtn = document.getElementById('cr-chat-toggle');
+  const chatCloseBtn = document.getElementById('cr-chat-close');
+  const chatSendBtn = document.getElementById('cr-chat-send');
+  const chatTextInput = document.getElementById('cr-chat-text');
+  if (chatToggleBtn) chatToggleBtn.onclick = toggleChatPanel;
+  if (chatCloseBtn) chatCloseBtn.onclick = toggleChatPanel;
+  if (chatSendBtn) chatSendBtn.onclick = sendChatMessage;
+  if (chatTextInput) chatTextInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
+
+  if (firebaseReady){
+    db.ref('clinic-router-chat').limitToLast(50).on('child_added', (snap) => {
+      const val = snap.val();
+      if (!val) return;
+      chatMessages.push(val);
+      if (chatMessages.length > 50) chatMessages.shift();
+      renderChatPanel();
+    });
   }
 
   console.log('%c🌿 이울 중앙안내 환자 시트', 'font-size:14px;font-weight:bold;');
