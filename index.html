@@ -145,7 +145,7 @@
      딱 두 세트만 써서 항상 같은 의미로 인식되도록 고정 — 테마별로 안 바뀜 */
   body.theme-pink      { background: #FFF0F5; }
   body.theme-cyberpunk { background: linear-gradient(160deg, #030303 0%, #1C1C20 50%, #050505 100%); }
-  body.theme-party     { background: #FFFCF0; }
+  body.theme-retro     { background: #008080; }
   body.theme-glass      {
     background:
       radial-gradient(circle at 12% 18%, rgba(255,180,224,0.4) 0%, transparent 45%),
@@ -160,7 +160,7 @@
   body.theme-dark      { background: #12151C; }
 
   .cr-root.theme-pink, .cr-overlay.theme-pink,
-  .cr-root.theme-party, .cr-overlay.theme-party,
+  .cr-root.theme-retro, .cr-overlay.theme-retro,
   .cr-root.theme-glass, .cr-overlay.theme-glass {
     --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
     --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
@@ -183,9 +183,11 @@
     --bg:#0A0A0C; --panel:#131316; --ink:#F5F5F7; --muted:#8A8A93; --line:#2A2A2E;
     --accent:#F5F5F7; --accent-dim:#2A2A2E;
   }
-  .cr-root.theme-party, .cr-overlay.theme-party {
-    --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
-    --accent:#FF5C8A; --accent-dim:#FFE0EA;
+  /* 555: 레트로 윈도우95/98 — 은색 창, 파란 타이틀바, 각진 3D 베젤 */
+  .cr-root.theme-retro, .cr-overlay.theme-retro {
+    --bg:#C0C0C0; --panel:#C0C0C0; --ink:#000000; --muted:#4B4B4B; --line:#808080;
+    --accent:#000080; --accent-dim:#D4D0C8;
+    font-family: Tahoma, "Segoe UI", Verdana, Arial, sans-serif;
   }
   /* 444: 리퀴드 글라스 — 반투명 유리 재질 + 배경 그라데이션이 은은히 비침 */
   .cr-root.theme-glass, .cr-overlay.theme-glass {
@@ -216,6 +218,40 @@
   .themed .cr-chip.cur:not(.consult) { background: var(--panel) !important; }
   .themed input, .themed select, .themed textarea { background: var(--panel) !important; color: var(--ink) !important; border-color: var(--line) !important; }
   .themed .cr-check-pill .cr-box { color: var(--panel); }
+
+  /* 555: 레트로 윈도우 — 각진 베젤, 블루 타이틀바 */
+  .theme-retro, .theme-retro * { border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important; }
+  .theme-retro .cr-card, .theme-retro .cr-modal, .theme-retro .cr-mini-panel {
+    border: 2px outset #E0E0E0 !important;
+    background: #C0C0C0 !important;
+  }
+  .theme-retro .cr-btn {
+    border: 2px outset #E0E0E0 !important;
+    background: #C0C0C0 !important;
+    color: #000 !important;
+    font-weight: 700;
+  }
+  .theme-retro .cr-btn:active { border-style: inset !important; }
+  .theme-retro input, .theme-retro select, .theme-retro textarea,
+  .theme-retro .cr-search-input, .theme-retro .cr-check-pill {
+    border: 2px inset #E0E0E0 !important;
+    background: #FFFFFF !important;
+    color: #000 !important;
+  }
+  .theme-retro .cr-col-head, .theme-retro .cr-modal h3, .theme-retro .cr-mini-panel h4 {
+    background: linear-gradient(90deg,#000080,#1084D0) !important;
+    color: #FFFFFF !important;
+    margin: -1px -1px 8px -1px !important;
+    padding: 4px 8px !important;
+  }
+  .theme-retro .cr-title { color: #000; }
+  .theme-retro .cr-title small { color: #333; }
+  .theme-retro .cr-card.st-waiting   { border-color: var(--wait-ink) !important; }
+  .theme-retro .cr-card.st-consult   { border-color: var(--consult) !important; }
+  .theme-retro .cr-card.st-done      { border-color: var(--done) !important; }
+  .theme-retro .cr-card.st-discharge { border-color: var(--discharge-ink) !important; }
+  .theme-retro .cr-card.st-anomaly   { border-color: var(--anomaly) !important; }
+  .theme-retro .cr-status-dot { border-radius: 50% !important; }
 
   /* 리퀴드 글라스 — 블러 + 반투명 */
   .theme-glass.cr-root, .theme-glass.cr-overlay {
@@ -328,7 +364,7 @@
     '222': 'pink',
     '333': 'cyberpunk',
     '444': 'glass',
-    '555': 'party',
+    '555': 'retro',
     '666': 'hellfire',
     '777': 'jackpot',
     '888': 'infinity',
