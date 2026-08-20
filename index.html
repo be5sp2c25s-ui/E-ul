@@ -235,8 +235,9 @@
 
   /* 555: 레트로 윈도우 — 각진 베젤, 블루 타이틀바 */
   .theme-retro, .theme-retro * { border-radius: 0 !important; box-shadow: none !important; text-shadow: none !important; }
-  .theme-retro .cr-card, .theme-retro .cr-modal, .theme-retro .cr-mini-panel {
+  .theme-retro .cr-card, .theme-retro .cr-modal, .theme-retro .cr-mini-panel, .theme-retro .cr-col {
     border: 2px outset #E0E0E0 !important;
+    box-shadow: inset 0 0 0 1px #000, 1px 1px 0 1px #000 !important;
     background: #C0C0C0 !important;
   }
   .theme-retro .cr-btn {
@@ -256,7 +257,36 @@
     background: #000080 !important;
     color: #FFFFFF !important;
     margin: -1px -1px 8px -1px !important;
-    padding: 4px 8px !important;
+    padding: 4px 6px !important;
+  }
+  .theme-retro .cr-col-head::before,
+  .theme-retro .cr-modal h3::before, .theme-retro .cr-modal h3::after,
+  .theme-retro .cr-mini-panel h4::before {
+    display: inline-flex !important;
+    align-items: center; justify-content: center;
+    width: 15px; height: 13px;
+    background: #C0C0C0 !important;
+    border: 1px outset #E0E0E0 !important;
+    color: #000 !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    flex: none;
+  }
+  .theme-retro .cr-col-head::before,
+  .theme-retro .cr-modal h3::before,
+  .theme-retro .cr-mini-panel h4::before {
+    content: '─';
+    margin-right: 6px;
+  }
+  .theme-retro .cr-modal h3 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px;
+  }
+  .theme-retro .cr-modal h3::after {
+    content: '▼';
+    margin-left: 6px;
   }
   .theme-retro .cr-title { color: #000; }
   .theme-retro .cr-title small { color: #333; }
