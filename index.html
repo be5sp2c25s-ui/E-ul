@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>안내중앙 라우팅 보드</title>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+<style>
+  body { margin:0; background:#F5F7FA; }
+  .cr-root, .cr-overlay {
+    --bg: #F5F7FA;
+    --panel: #FFFFFF;
+    --ink: #1C2430;
+    --muted: #7C8798;
+    --line: #E2E6ED;
+    --accent: #2F6FED;
+    --accent-dim: #EAF0FE;
+    --wait-ink: #1C2430;
+    --consult: #2F6FED;
+    --consult-bg: #EAF0FE;
+    --done: #E07B1E;
+    --done-bg: #FBEBD9;
+    --discharge-bg: #D8DCE4;
+    --discharge-ink: #565F6E;
+    --anomaly: #C22067;
+    --anomaly-bg: #FBDDEA;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 18px;
+    min-height: 640px;
+    box-sizing: border-box;
+  }
+  .cr-root *, .cr-overlay * { box-sizing: border-box; }
+  .cr-mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; letter-spacing: 0.3px; }
+
+  .cr-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .cr-title { font-size:18px; font-weight:800; letter-spacing:-0.3px; }
+  .cr-title small { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; letter-spacing:0.2px;}
+  .cr-topbtns { display:flex; gap:8px; }
+
+  .cr-btn { border:none; cursor:pointer; font-weight:700; font-size:12.5px; padding:9px 13px; border-radius:9px; transition:transform .08s ease, opacity .15s ease; }
+  .cr-btn:active { transform: scale(0.96); }
+  .cr-btn-primary { background:var(--accent); color:#fff; }
+  .cr-btn-ghost { background:var(--panel); color:var(--ink); border:1px solid var(--line); }
+  .cr-btn-soft { background:var(--accent-dim); color:var(--accent); }
+  .cr-btn-sm { padding:6px 10px; font-size:11.5px; border-radius:7px; }
+  .cr-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+  .cr-toolrow { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+  .cr-search-input { flex:1; min-width:160px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
+  .cr-card.cr-search-hit { outline:3px solid var(--accent); outline-offset:1px; }
+  .cr-legend { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; font-size:11px; color:var(--muted); font-weight:600;}
+  .cr-legend span { display:inline-flex; align-items:center; gap:5px; }
+  .cr-dot { width:9px; height:9px; border-radius:3px; display:inline-block; }
+
+  .cr-dept-group { margin-bottom:14px; }
+  .cr-dept-group-title { font-size:12px; font-weight:800; color:var(--muted); margin:0 0 6px 2px; text-transform:none; }
+  .cr-board { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; }
+  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; max-height:420px; }
+  .cr-col-head { padding:11px 12px 9px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
+  .cr-col-name { font-weight:800; font-size:13px; }
+  .cr-col-count { font-size:11px; font-weight:700; color:var(--muted); background:var(--bg); border-radius:20px; padding:2px 8px; }
+  .cr-col-count.busy { color:var(--accent); background:var(--accent-dim); }
+  .cr-col-body { padding:9px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .cr-col-empty { color:var(--muted); font-size:11.5px; text-align:center; padding:18px 4px; }
+  .cr-col-rm { background:none; border:none; cursor:pointer; color:var(--muted); font-size:14px; padding:2px 4px; }
+
+  .cr-card { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; position:relative; background:#fff; border-left:4px solid var(--wait-ink); }
+  .cr-card.st-consult { border-left-color: var(--consult); background: var(--consult-bg); }
+  .cr-card.st-waiting { border-left-color: var(--wait-ink); }
+  .cr-card.st-done { border-left-color: var(--done); background: var(--done-bg); }
+  .cr-card.st-discharge { border-left-color: var(--discharge-ink); background: var(--discharge-bg); }
+  .cr-card.st-anomaly { border-left-color: var(--anomaly); background: var(--anomaly-bg); }
+  .cr-card-top { display:flex; justify-content:space-between; align-items:baseline; gap:6px; }
+  .cr-card-name { font-weight:800; font-size:13px; }
+  .cr-card-no { font-size:10.5px; color:var(--muted); }
+  .cr-card-status { font-size:10px; font-weight:700; margin-top:3px; }
+  .cr-card-status.consult { color:var(--consult); }
+  .cr-card-status.waiting { color:var(--muted); }
+  .cr-card-status.done { color:var(--done); }
+  .cr-card-status.discharge { color:var(--discharge-ink); }
+  .cr-card-status.anomaly { color:var(--anomaly); }
+  .cr-card-chips { display:flex; gap:4px; flex-wrap:wrap; margin-top:6px; }
+  .cr-chip { font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:5px; border:1px solid var(--line); color:var(--muted); }
+  .cr-chip.done { background:var(--done-bg); color:var(--done); border-color:transparent; }
+  .cr-chip.cur { background:#fff; color:var(--wait-ink); border-color:var(--wait-ink); }
+  .cr-chip.cur.consult { background:var(--consult); color:#fff; border-color:var(--consult); }
+  .cr-lab-flag { font-size:12px; }
+  .cr-note-flag { font-size:12px; cursor:help; }
+
+  .cr-us-row { display:flex; align-items:center; gap:8px; padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-size:12.5px; cursor:pointer; background:#fff; }
+  .cr-us-row.due { border-color:var(--anomaly); background:var(--anomaly-bg); }
+  .cr-us-time { font-weight:800; font-family:"SFMono-Regular",Consolas,monospace; min-width:46px; color:var(--muted); }
+  .cr-us-row.due .cr-us-time { color:var(--anomaly); }
+  .cr-us-name { flex:1; font-weight:700; }
+  .cr-us-badge { font-size:10px; font-weight:800; color:var(--anomaly); background:#fff; padding:2px 6px; border-radius:5px; }
+  .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; }
+  .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+  .cr-mini-panel h4 { margin:0 0 8px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px; }
+  .cr-mini-list { display:flex; flex-wrap:wrap; gap:6px; }
+  .cr-mini-chip { font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer; }
+  .cr-mini-chip.discharge { background:var(--discharge-bg); color:var(--discharge-ink); }
+  .cr-mini-chip.anomaly { background:var(--anomaly-bg); color:var(--anomaly); }
+  .cr-empty-note { color:var(--muted); font-size:11.5px; }
+
+  .cr-overlay { position:fixed; inset:0; background:rgba(20,24,32,0.45); display:flex; align-items:center; justify-content:center; z-index:50; padding:16px; }
+  .cr-modal { background:#fff; border-radius:14px; width:100%; max-width:440px; max-height:88vh; overflow-y:auto; padding:18px; }
+  .cr-modal h3 { margin:0 0 12px; font-size:16px; font-weight:800; }
+  .cr-field { margin-bottom:12px; }
+  .cr-field label { display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:5px; }
+  .cr-field input[type=text], .cr-field input[type=time] { width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--line); font-size:13.5px; font-family:inherit; }
+  .cr-inline-fields { display:flex; gap:8px; }
+  .cr-inline-fields > div { flex:1; }
+  .cr-check-grid { display:flex; flex-wrap:wrap; gap:6px; }
+  .cr-check-pill { border:1.5px solid var(--line); border-radius:20px; padding:6px 12px 6px 8px; font-size:12px; font-weight:700; cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:5px; background:#fff; }
+  .cr-check-pill .cr-box { width:15px; height:15px; border-radius:4px; border:1.5px solid var(--line); display:inline-flex; align-items:center; justify-content:center; font-size:10px; color:#fff; flex:none; }
+  .cr-check-pill.on { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+  .cr-check-pill.on .cr-box { background:var(--accent); border-color:var(--accent); }
+  .cr-room-list { display:flex; flex-direction:column; gap:8px; margin-top:4px; }
+  .cr-room-list-dept { font-size:11px; font-weight:800; color:var(--muted); margin-top:6px; }
+  .cr-room-list-item { display:flex; align-items:center; justify-content:space-between; background:var(--bg); border-radius:8px; padding:6px 10px; font-size:12.5px; font-weight:700; }
+  .cr-modal-actions { display:flex; gap:8px; margin-top:14px; }
+  .cr-modal-actions .cr-btn { flex:1; }
+
+  .cr-detail-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .cr-detail-row:last-child { border-bottom:none; }
+  .cr-dept-name { font-weight:700; }
+  .cr-dept-tag { font-size:10px; font-weight:700; padding:2px 7px; border-radius:6px; }
+  .cr-dept-tag.pending { background:var(--bg); color:var(--muted); }
+  .cr-dept-tag.current-w { background:#fff; border:1px solid var(--wait-ink); color:var(--wait-ink); }
+  .cr-dept-tag.current-c { background:var(--consult); color:#fff; }
+  .cr-dept-tag.done { background:var(--done-bg); color:var(--done); }
+
+  .cr-toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:700; z-index:100; opacity:0; transition:opacity .25s ease; pointer-events:none;}
+  .cr-toast.show { opacity:1; }
+</style>
+
+</style>
+</head>
+<body>
+
+<div id="cr-app" class="cr-root"></div>
+
+<script>
+(function(){
+  // ============================================================
+  // 아래 firebaseConfig를 본인의 Firebase 프로젝트 설정으로 바꿔주세요.
+  // Firebase 콘솔 > 프로젝트 설정 > 내 앱 > 웹 앱 설정에서 복사할 수 있습니다.
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9x-QIs9MAgqSJZPfouDuhclBwp6QsDlA",
+    authDomain: "e-ul1972.firebaseapp.com",
+    databaseURL: "https://e-ul1972-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "e-ul1972",
+    storageBucket: "e-ul1972.firebasestorage.app",
+    messagingSenderId: "229595330645",
+    appId: "1:229595330645:web:5b82a3020fdbe60a883cdc"
+  };
+  const DB_PATH = 'clinic-router-state-v2';
+
+  let db = null;
+  let firebaseReady = false;
+  try {
+    if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('여기에')) {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      firebaseReady = true;
+    }
+  } catch(e) { firebaseReady = false; }
+
+  let state = { rooms: [], patients: [] }; // room: {id, name, dept}
+  let loaded = false;
+  let modal = null; // {type:'new'} | {type:'detail', id} | {type:'room'}
+  let pendingRxAsk = null;
+  let editMode = false;
+  let searchQuery = '';
+  let undoStack = [];
+  let roomDraftDept = '';
+  let lastRoomAddedDept = '';
+
+  const PRESET_DEPTS = ['내과','정형외과','만물부','치과','초음파','랩부','약국부'];
+
+  function uid(){ return Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
+
+  function snapshotForUndo(){
+    try {
+      undoStack.push(JSON.stringify(state));
+      if (undoStack.length > 15) undoStack.shift();
+    } catch(e) {}
+  }
+
+  function undoLast(){
+    if (!undoStack.length) { toast('되돌릴 작업이 없습니다'); return; }
+    const prev = undoStack.pop();
+    try {
+      state = JSON.parse(prev);
+      saveState(); render();
+      toast('바로 전 작업을 되돌렸습니다');
+    } catch(e) { toast('되돌리기 실패'); }
+  }
+
+  function migrateState(){
+    // 예전 형식(부서 항목에 room 필드가 없던 시절) 데이터 호환
+    state.patients.forEach(p=>{
+      if (p.note === undefined) p.note = '';
+      if (p.skipLab === undefined) p.skipLab = false;
+      if (!Array.isArray(p.history)) p.history = [];
+      if (!Array.isArray(p.depts)) p.depts = [];
+      p.depts.forEach(d=>{ if (d.room === undefined) d.room = null; });
+      if (p.currentDept){
+        const room = roomOf(p.currentDept);
+        if (room){
+          const entry = p.depts.find(d=>d.name===room.dept);
+          if (entry && !entry.room) entry.room = p.currentDept;
+        }
+      }
+    });
+  }
+
+  function showConfigWarning(){
+    const app = document.getElementById('cr-app');
+    app.innerHTML = '<div style="padding:32px 20px;text-align:center;">'
+      + '<div style="font-size:16px;font-weight:800;margin-bottom:10px;">⚠️ Firebase 설정이 필요합니다</div>'
+      + '<div style="font-size:13px;color:#7C8798;max-width:420px;margin:0 auto;line-height:1.6;">'
+      + '이 파일 상단의 <code>firebaseConfig</code> 값을 본인의 Firebase 프로젝트 설정으로 바꿔주세요.<br>'
+      + '(파일을 텍스트 편집기로 열어 "여기에_" 로 시작하는 부분들을 채우면 됩니다)'
+      + '</div></div>';
+  }
+
+  function loadState(){
+    if (!firebaseReady){
+      loaded = true;
+      showConfigWarning();
+      return;
+    }
+    db.ref(DB_PATH).on('value', (snapshot) => {
+      if (modal) return; // 모달 열려있는 동안엔 원격 갱신으로 화면을 덮지 않음
+      const val = snapshot.val();
+      const incoming = (val && Array.isArray(val.rooms) && Array.isArray(val.patients)) ? val : { rooms: [], patients: [] };
+      // 내용이 실제로 안 바뀌었으면 다시 그리지 않음 — 접속 직후 이중 렌더로
+      // 버튼이 막 다시 그려지는 동안 첫 클릭이 씹히는 문제를 막기 위함
+      if (loaded && JSON.stringify(incoming) === JSON.stringify(state)) return;
+      state = incoming;
+      migrateState();
+      loaded = true;
+      render();
+    }, (error) => {
+      toast('연결 오류: ' + error.message);
+    });
+  }
+
+  async function saveState(){
+    if (!firebaseReady) { toast('Firebase 설정이 안 되어 있어 저장할 수 없습니다'); return; }
+    try { await db.ref(DB_PATH).set(state); }
+    catch(e) { toast('저장 실패 — 네트워크를 확인해주세요'); }
+  }
+
+  let toastTimer = null;
+  function toast(msg){
+    let el = document.querySelector('.cr-toast');
+    if (!el) { el = document.createElement('div'); el.className='cr-toast'; document.body.appendChild(el); }
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> el.classList.remove('show'), 1800);
+  }
+
+  // ---------- helpers over rooms/departments ----------
+  function deptList(){
+    const seen = [];
+    state.rooms.forEach(r => { if (!seen.includes(r.dept)) seen.push(r.dept); });
+    return seen;
+  }
+  function roomsOfDept(dept){ return state.rooms.filter(r => r.dept === dept); }
+  function roomLoad(roomName){
+    // 대기중이든 진료중이든 그 방에 사람이 있으면 '차 있는' 것으로 취급 — 빈 방이 항상 최우선
+    return state.patients.filter(p => p.currentDept === roomName && (p.status === 'waiting' || p.status === 'in-consult')).length;
+  }
+  function deptBestLoad(dept){
+    const rooms = roomsOfDept(dept);
+    if (!rooms.length) return Infinity;
+    return Math.min(...rooms.map(r => roomLoad(r.name)));
+  }
+  function pickRoomInDept(dept){
+    const rooms = roomsOfDept(dept);
+    if (!rooms.length) return null;
+    const sorted = [...rooms].sort((a,b) => roomLoad(a.name) - roomLoad(b.name));
+    return sorted[0].name;
+  }
+  function roomOf(roomName){ return state.rooms.find(r => r.name === roomName); }
+
+  // ---------- core routing algorithm ----------
+  function pickNext(patient){
+    // 초음파는 자동배정 후보에서 제외 — 예약시간 패널에서 안내중앙이 수동으로 보냄
+    const remaining = patient.depts.filter(d => !d.done && d.name !== '초음파');
+    if (remaining.length === 0) return null;
+
+    const availDepts = deptList();
+
+    const hasIM = remaining.some(d => d.name === '내과');
+    const imReady = patient.labReady || patient.skipLab;
+    const nonIM = remaining.filter(d => d.name !== '내과');
+
+    let candidates;
+    if (hasIM && imReady) candidates = remaining;
+    else if (hasIM && !imReady) candidates = nonIM.length ? nonIM : remaining;
+    else candidates = remaining;
+
+    const existing = candidates.filter(d => availDepts.includes(d.name));
+    const pool = existing.length ? existing : candidates;
+
+    // 부서 비교는 그 부서 안의 '가장 널널한(빈) 방' 기준 — 방 하나가 진료중이어도
+    // 다른 방이 비어있으면 그 부서가 우선순위에서 밀리지 않도록 함
+    pool.sort((a,b) => deptBestLoad(a.name) - deptBestLoad(b.name));
+    const chosenDept = pool[0].name;
+    return pickRoomInDept(chosenDept);
+  }
+
+  // ---------- mutations ----------
+  function addRoom(deptName, roomNo){
+    deptName = (deptName || '').trim();
+    roomNo = (roomNo || '').trim();
+    if (!deptName) { toast('부서명을 입력해주세요'); return false; }
+    const label = roomNo ? (deptName + ' ' + roomNo) : deptName;
+    if (state.rooms.some(r => r.name === label)) { toast('이미 있는 진료실입니다'); return false; }
+    snapshotForUndo();
+    state.rooms.push({ id: uid(), name: label, dept: deptName });
+    saveState();
+    return true;
+  }
+
+  function removeRoom(name){
+    const inUse = state.patients.some(p => p.currentDept === name && (p.status==='waiting'||p.status==='in-consult'));
+    if (inUse) { toast('해당 진료실에 대기/진료 중인 환자가 있어 삭제할 수 없습니다'); return; }
+    snapshotForUndo();
+    state.rooms = state.rooms.filter(r => r.name !== name);
+    saveState(); render();
+  }
+
+  function assignRoomToPatient(p, roomName){
+    p.currentDept = roomName;
+    const room = roomOf(roomName);
+    if (room){
+      const entry = p.depts.find(d=>d.name===room.dept);
+      if (entry) entry.room = roomName;
+      if (!p.history) p.history = [];
+      p.history.push({ dept: room.dept, room: roomName, startedAt: Date.now(), doneAt: null, paused: false });
+    }
+  }
+
+  function closeHistoryFor(p, roomName, paused){
+    if (!p.history) return;
+    for (let i = p.history.length - 1; i >= 0; i--){
+      if (p.history[i].room === roomName && p.history[i].doneAt === null){
+        p.history[i].doneAt = Date.now();
+        p.history[i].paused = !!paused;
+        break;
+      }
+    }
+  }
+
+  function historyRecordFor(p, roomName){
+    if (!p.history) return null;
+    for (let i = p.history.length - 1; i >= 0; i--){
+      if (p.history[i].room === roomName) return p.history[i];
+    }
+    return null;
+  }
+
+  function addPatient(patientNo, name, deptNames, usAptTime){
+    const trimmedNo = patientNo.trim();
+    if (state.patients.some(p => p.patientNo === trimmedNo)){
+      alert('환자번호 "' + trimmedNo + '"는 이미 등록되어 있습니다. 번호를 확인해주세요.');
+      return false;
+    }
+    const depts = deptNames.map(n => ({ name: n, done: false, room: null }));
+    snapshotForUndo();
+    const p = {
+      id: uid(),
+      patientNo: trimmedNo,
+      name: name.trim(),
+      depts,
+      currentDept: null,
+      status: 'waiting',
+      labReady: false,
+      skipLab: false,
+      usAptTime: usAptTime || null,
+      note: '',
+      history: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+    const next = pickNext(p);
+    if (next) {
+      assignRoomToPatient(p, next);
+    } else {
+      // 초음파만 필요하거나(혹은 아직 배정할 곳이 없음) — 예약 패널에서 수동으로 보낼 때까지 대기
+      p.currentDept = null;
+      p.status = 'us-wait';
+    }
+    state.patients.push(p);
+    saveState(); render();
+    toast(next ? (name + '님 ' + next + ' 배정') : (name + '님 등록됨 — 초음파 예약 패널에서 관리'));
+    return true;
+  }
+
+  function startConsult(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    p.status = 'in-consult';
+    p.updatedAt = Date.now();
+    saveState(); render();
+  }
+
+  function finishDept(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    const room = roomOf(p.currentDept);
+    const deptName = room ? room.dept : p.currentDept;
+    const d = p.depts.find(x=>x.name===deptName);
+    if (d) d.done = true;
+    closeHistoryFor(p, p.currentDept, false);
+    const remaining = p.depts.filter(x=>!x.done);
+    if (remaining.length === 0){
+      pendingRxAsk = id;
+      modal = { type:'detail', id };
+      render();
+      return;
+    }
+    const next = pickNext(p);
+    if (next) {
+      assignRoomToPatient(p, next);
+      p.status = 'waiting';
+      toast(p.name + '님 → ' + next);
+    } else {
+      p.currentDept = null;
+      p.status = 'us-wait';
+      toast(p.name + '님 — 초음파만 남음, 예약 패널에서 보내주세요');
+    }
+    p.updatedAt = Date.now();
+    saveState(); render();
+  }
+
+  function resolvePrescription(id, needed){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    pendingRxAsk = null;
+    if (needed){
+      if (!state.rooms.some(r=>r.dept==='약국부')) state.rooms.push({id:uid(), name:'약국부', dept:'약국부'});
+      if (!p.depts.some(d=>d.name==='약국부')) p.depts.push({name:'약국부', done:false, room:null});
+      const room = pickRoomInDept('약국부') || '약국부';
+      assignRoomToPatient(p, room);
+      p.status = 'waiting';
+      toast(p.name + '님 약국부로 인계');
+    } else {
+      p.currentDept = null;
+      p.status = 'discharged';
+      toast(p.name + '님 귀가 처리');
+    }
+    p.updatedAt = Date.now();
+    saveState(); render();
+  }
+
+  function finishPharmacy(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    const entry = p.depts.find(d=>d.name==='약국부');
+    if (entry) entry.done = true;
+    closeHistoryFor(p, p.currentDept, false);
+    p.currentDept = null;
+    p.status = 'discharged';
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(p.name + '님 조제 완료 · 귀가 처리');
+  }
+
+  function toggleLab(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    p.labReady = !p.labReady;
+    p.updatedAt = Date.now();
+    saveState(); render();
+  }
+
+  function toggleSkipLab(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    p.skipLab = !p.skipLab;
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(p.skipLab ? '검사결과 필요없음으로 표시' : '검사결과 필요 상태로 복귀');
+  }
+
+  function toggleAnomaly(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    if (p.status === 'anomaly') { p.status = p._prevStatus || 'waiting'; }
+    else { p._prevStatus = p.status; p.status = 'anomaly'; }
+    p.updatedAt = Date.now();
+    saveState(); render();
+  }
+
+  function updatePatientInfo(id, no, name){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    if (!no.trim() || !name.trim()) { toast('환자번호와 이름을 입력해주세요'); return; }
+    const trimmedNo = no.trim();
+    if (state.patients.some(x => x.patientNo === trimmedNo && x.id !== id)){
+      alert('환자번호 "' + trimmedNo + '"는 이미 다른 환자에게 등록되어 있습니다.');
+      return;
+    }
+    snapshotForUndo();
+    p.patientNo = trimmedNo;
+    p.name = name.trim();
+    p.updatedAt = Date.now();
+    editMode = false;
+    saveState(); render();
+    toast('환자 정보 수정됨');
+  }
+
+  function saveNote(id, text){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    p.note = text.trim();
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast('메모 저장됨');
+  }
+
+  function updateUsTime(id, time){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    snapshotForUndo();
+    p.usAptTime = time || null;
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(p.usAptTime ? '초음파 예약시간 저장됨 (' + p.usAptTime + ')' : '초음파 예약시간 삭제됨');
+  }
+
+  function addDeptToPatient(id, deptName){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    if (p.status === 'discharged') { toast('이미 귀가한 환자는 부서를 추가할 수 없습니다'); return; }
+    if (p.depts.some(d=>d.name===deptName)) { toast('이미 등록된 부서입니다'); return; }
+    snapshotForUndo();
+    p.depts.push({ name: deptName, done: false, room: null });
+    if (!p.currentDept){
+      const next = pickNext(p);
+      if (next){ assignRoomToPatient(p, next); p.status = 'waiting'; }
+    }
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(deptName + ' 부서 추가됨');
+  }
+
+  function removeDeptFromPatient(id, deptName){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    const entry = p.depts.find(d=>d.name===deptName);
+    if (!entry) return;
+    if (entry.done) { toast('이미 완료된 부서는 제거할 수 없습니다'); return; }
+    if (entry.room && entry.room === p.currentDept) { toast('현재 진행 중인 부서입니다. 먼저 완료 처리 후 제거해주세요'); return; }
+    snapshotForUndo();
+    p.depts = p.depts.filter(d=>d.name!==deptName);
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(deptName + ' 부서 제거됨');
+  }
+
+  function manualAssign(id, roomName){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    const room = roomOf(roomName);
+    if (!room) return;
+    const entry = p.depts.find(d=>d.name===room.dept);
+    if (!entry) { toast('이 환자는 그 부서가 필요하지 않습니다'); return; }
+    if (entry.done) { toast('이미 완료된 부서입니다'); return; }
+    if (p.status === 'in-consult'){
+      alert(p.name + '님은 지금 진료 중이라 다른 곳으로 옮길 수 없습니다.');
+      return;
+    }
+    if (roomName === p.currentDept) { toast('이미 그 진료실에 배정되어 있습니다'); return; }
+    snapshotForUndo();
+    if (p.currentDept){
+      const curRoom = roomOf(p.currentDept);
+      if (curRoom){
+        const curEntry = p.depts.find(d=>d.name===curRoom.dept);
+        if (curEntry && !curEntry.done) curEntry.room = null;
+      }
+      closeHistoryFor(p, p.currentDept, true);
+    }
+    assignRoomToPatient(p, roomName);
+    p.status = 'waiting';
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(p.name + '님 ' + roomName + '(으)로 직접 배정');
+  }
+
+  function copyCallText(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    const room = roomOf(p.currentDept);
+    const deptLabel = p.currentDept || (room ? room.dept : '');
+    const text = deptLabel + ' 호출 — ' + p.name + '(#' + p.patientNo + ') 님 모셔가주세요';
+    const done = () => toast('복사됨: ' + text);
+    const fail = () => toast('복사 실패 — 직접 입력해주세요: ' + text);
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(fail);
+    } else {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        done();
+      } catch(e) { fail(); }
+    }
+  }
+
+  function computeRoomCounts(){
+    const counts = {};
+    state.rooms.forEach(r => counts[r.name] = 0);
+    state.patients.forEach(p => {
+      const seen = new Set();
+      (p.history||[]).forEach(h => seen.add(h.room));
+      p.depts.forEach(d => { if (d.room) seen.add(d.room); });
+      seen.forEach(r => { if (counts[r] !== undefined) counts[r]++; });
+    });
+    return counts;
+  }
+
+  function daySummaryText(){
+    const counts = computeRoomCounts();
+    const depts = deptList();
+    const lines = [];
+    depts.forEach(dept => {
+      const rooms = roomsOfDept(dept);
+      if (rooms.length > 1){
+        rooms.forEach(r => lines.push(r.name + ': ' + counts[r.name] + '명'));
+        const total = rooms.reduce((s,r)=>s+counts[r.name],0);
+        lines.push(dept + ' 총 ' + total + '명');
+      } else if (rooms.length === 1){
+        lines.push(dept + ' 총 ' + counts[rooms[0].name] + '명');
+      }
+    });
+    const total = state.patients.length;
+    const discharged = state.patients.filter(p=>p.status==='discharged').length;
+    const anomaly = state.patients.filter(p=>p.status==='anomaly').length;
+    lines.push('');
+    lines.push('총 접수 ' + total + '명 · 귀가 ' + discharged + '명 · 이상 ' + anomaly + '명');
+    return lines.join('\n');
+  }
+
+  function daySummaryHtml(){
+    const counts = computeRoomCounts();
+    const depts = deptList();
+    const rows = depts.map(dept => {
+      const rooms = roomsOfDept(dept);
+      const total = rooms.reduce((s,r)=>s+counts[r.name],0);
+      const roomLines = rooms.length > 1 ? rooms.map(r=>
+        '<div style="display:flex;justify-content:space-between;padding:2px 0 2px 10px;font-size:12px;color:var(--muted);"><span>'+esc(r.name)+'</span><span>'+counts[r.name]+'명</span></div>'
+      ).join('') : '';
+      return '<div style="margin-bottom:8px;">'
+        + '<div style="display:flex;justify-content:space-between;font-weight:800;font-size:13px;"><span>'+esc(dept)+'</span><span>총 '+total+'명</span></div>'
+        + roomLines + '</div>';
+    }).join('');
+    const total = state.patients.length;
+    const discharged = state.patients.filter(p=>p.status==='discharged').length;
+    const anomaly = state.patients.filter(p=>p.status==='anomaly').length;
+    const active = total - discharged - anomaly;
+    return '<h3>오늘 진료 마감 요약</h3>'
+      + '<div style="font-size:12px;color:var(--muted);margin-bottom:12px;">총 접수 '+total+'명 · 귀가 '+discharged+' · 진행중 '+active+' · 이상 '+anomaly+'</div>'
+      + '<div style="max-height:42vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:10px 12px;">'
+      + (rows || '<div class="cr-empty-note">기록된 진료실이 없습니다</div>')
+      + '</div>'
+      + '<div class="cr-empty-note" style="margin-top:8px;">화면을 직접 캡처하거나, 아래 버튼으로 텍스트를 복사해 보관하세요.</div>'
+      + '<div class="cr-field" style="margin-top:8px;"><button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-copy-summary" style="width:100%;">📋 요약 텍스트 복사</button></div>'
+      + '<div class="cr-modal-actions">'
+      + '<button class="cr-btn cr-btn-ghost" id="cr-modal-close">닫기</button>'
+      + '<button class="cr-btn cr-btn-primary" id="cr-confirm-reset" style="background:var(--anomaly);">환자 명단 초기화</button>'
+      + '</div>';
+  }
+
+  function resetPatientsForNewDay(){
+    if (!confirm('오늘 환자 명단을 모두 초기화할까요?\n진료실 설정은 그대로 유지되고, 환자 데이터만 지워지며 되돌릴 수 없습니다.')) return;
+    snapshotForUndo();
+    state.patients = [];
+    modal = null;
+    saveState(); render();
+    toast('환자 명단 초기화 완료 — 진료실 설정은 유지됨');
+  }
+
+  function applySearch(){
+    document.querySelectorAll('.cr-card').forEach(el => el.classList.remove('cr-search-hit'));
+    const q = (searchQuery||'').trim().toLowerCase();
+    if (!q) return;
+    let first = null;
+    document.querySelectorAll('.cr-card').forEach(el=>{
+      if (el.textContent.toLowerCase().includes(q)){
+        el.classList.add('cr-search-hit');
+        if (!first) first = el;
+      }
+    });
+    if (first) first.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+  }
+
+  function sendToUltrasoundNow(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return;
+    const usEntry = p.depts.find(d=>d.name==='초음파');
+    if (!usEntry || usEntry.done) return;
+    if (!state.rooms.some(r=>r.dept==='초음파')) { toast('초음파 진료실이 먼저 등록되어야 합니다'); return; }
+    if (p.status === 'in-consult'){
+      alert(p.name + '님은 지금 진료 중이라 초음파로 보낼 수 없습니다. 진료가 끝난 후 다시 시도해주세요.');
+      return;
+    }
+    snapshotForUndo();
+    // 다른 곳에서 대기 중이었다면 그 자리는 잠시 비워두고(완료 처리 아님) 초음파부터 보냄
+    if (p.currentDept){
+      const curRoom = roomOf(p.currentDept);
+      if (curRoom){
+        const curEntry = p.depts.find(d=>d.name===curRoom.dept);
+        if (curEntry && curEntry.name !== '초음파' && !curEntry.done) curEntry.room = null;
+      }
+      closeHistoryFor(p, p.currentDept, true);
+    }
+    const room = pickRoomInDept('초음파');
+    assignRoomToPatient(p, room);
+    p.status = 'waiting';
+    p.updatedAt = Date.now();
+    saveState(); render();
+    toast(p.name + '님 초음파로 이동');
+  }
+
+  function deletePatient(id){
+    snapshotForUndo();
+    state.patients = state.patients.filter(x=>x.id!==id);
+    modal = null;
+    saveState(); render();
+  }
+
+  // ---------- rendering ----------
+  function cellStatus(p, entry){
+    if (p.status === 'discharged') return 'discharged';
+    if (p.status === 'anomaly' && entry.room === p.currentDept) return 'anomaly';
+    if (entry.done) return 'done';
+    if (entry.room === p.currentDept) return p.status;
+    return null;
+  }
+
+  function fmtTime(ts){
+    if (!ts) return '';
+    const d = new Date(ts);
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
+  function statusLabel(deptLabel, cs, timeStr){
+    if (cs==='waiting') return deptLabel + ' 대기중';
+    if (cs==='in-consult') return deptLabel + ' 진료중';
+    if (cs==='done') return deptLabel + ' 완료' + (timeStr ? ' · '+timeStr : '');
+    if (cs==='discharged') return '귀가';
+    if (cs==='anomaly') return '이상상태';
+    return '';
+  }
+
+  function patientCard(p, entry, roomLabel){
+    const cs = cellStatus(p, entry);
+    const clsMap = { waiting:'st-waiting', 'in-consult':'st-consult', done:'st-done', discharged:'st-discharge', anomaly:'st-anomaly' };
+    const textClsMap = { waiting:'waiting', 'in-consult':'consult', done:'done', discharged:'discharge', anomaly:'anomaly' };
+    const cls = clsMap[cs] || 'st-waiting';
+    const chips = p.depts.map(d=>{
+      let c = 'cr-chip';
+      if (d.done) c += ' done';
+      else if (d.room === p.currentDept && p.status!=='discharged') c += (' cur' + (p.status==='in-consult' ? ' consult' : ''));
+      return '<span class="'+c+'">'+esc(d.name)+'</span>';
+    }).join('');
+    const labFlag = (p.depts.some(d=>d.name==='내과') && !p.depts.find(d=>d.name==='내과').done && !p.skipLab)
+      ? '<span class="cr-lab-flag" title="'+(p.labReady?'검사결과 도착':'검사결과 대기중')+'">'+(p.labReady?'🧪✅':'🧪')+'</span>' : '';
+    const noteFlag = p.note ? '<span class="cr-note-flag" title="'+esc(p.note)+'">📝</span>' : '';
+    const hist = cs==='done' ? historyRecordFor(p, roomLabel) : null;
+    const timeStr = hist ? fmtTime(hist.doneAt) : '';
+    return '<div class="cr-card '+cls+'" data-open="'+p.id+'">'
+      + '<div class="cr-card-top">'
+      + '<span class="cr-card-name">'+esc(p.name)+'</span>'
+      + '<span style="display:flex;align-items:center;gap:5px;">'+labFlag+noteFlag+'<span class="cr-card-no cr-mono">#'+esc(p.patientNo)+'</span></span>'
+      + '</div>'
+      + '<div class="cr-card-status '+(textClsMap[cs]||'waiting')+'">'+statusLabel(roomLabel, cs, timeStr)+'</div>'
+      + '<div class="cr-card-chips">'+chips+'</div>'
+      + '</div>';
+  }
+
+  function esc(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  function usPanelHtml(){
+    const list = state.patients.filter(p=>{
+      const e = p.depts.find(d=>d.name==='초음파');
+      return e && !e.done && !e.room;
+    });
+    if (!list.length) return '';
+    const now = new Date();
+    list.sort((a,b)=>{
+      if (!a.usAptTime && !b.usAptTime) return 0;
+      if (!a.usAptTime) return 1;
+      if (!b.usAptTime) return -1;
+      return a.usAptTime.localeCompare(b.usAptTime);
+    });
+    const rows = list.map(p=>{
+      let due = false;
+      if (p.usAptTime){
+        const [h,m] = p.usAptTime.split(':').map(Number);
+        const apt = new Date(now); apt.setHours(h,m,0,0);
+        due = now >= apt;
+      }
+      return '<div class="cr-us-row'+(due?' due':'')+'" data-open="'+p.id+'">'
+        + '<span class="cr-us-time">'+(p.usAptTime ? esc(p.usAptTime) : '시간미정')+'</span>'
+        + '<span class="cr-us-name">'+esc(p.name)+' <span class="cr-mono" style="font-size:10.5px;color:var(--muted);">#'+esc(p.patientNo)+'</span></span>'
+        + (due ? '<span class="cr-us-badge">지금 보내야 함</span>' : '')
+        + '<button class="cr-btn cr-btn-primary cr-btn-sm" data-sendus="'+p.id+'">보내기</button>'
+        + '</div>';
+    }).join('');
+    return '<div class="cr-mini-panel" style="margin-bottom:14px;"><h4>🔊 초음파 예약 대기 (예약순) · '+list.length+'명</h4>'
+      + '<div style="display:flex;flex-direction:column;gap:6px;">'+rows+'</div></div>';
+  }
+
+  function render(){
+    const app = document.getElementById('cr-app');
+    if (!loaded){ app.innerHTML = '<div style="padding:40px;text-align:center;color:#7C8798;font-size:13px;">불러오는 중…</div>'; return; }
+
+    const depts = deptList();
+    const groupsHtml = depts.map(dept => {
+      const rooms = roomsOfDept(dept);
+      const cols = rooms.map(r=>{
+        const entries = [];
+        state.patients.forEach(p=>{
+          const e = p.depts.find(d=>d.room===r.name);
+          if (e) entries.push({p, e});
+        });
+        const w = entries.filter(x=>cellStatus(x.p,x.e)==='waiting').length;
+        const cardsHtml = entries
+          .slice()
+          .sort((a,b)=>{
+            const group = { done:0, discharged:0, 'in-consult':1, anomaly:1, waiting:2 };
+            const csA = cellStatus(a.p,a.e), csB = cellStatus(b.p,b.e);
+            const gA = group[csA] ?? 3, gB = group[csB] ?? 3;
+            if (gA !== gB) return gA - gB;
+            const hA = historyRecordFor(a.p, r.name), hB = historyRecordFor(b.p, r.name);
+            const tA = gA===0 ? (hA && hA.doneAt || 0) : (hA && hA.startedAt || 0);
+            const tB = gB===0 ? (hB && hB.doneAt || 0) : (hB && hB.startedAt || 0);
+            return tA - tB;
+          })
+          .map(x=>patientCard(x.p, x.e, r.name)).join('');
+        return '<div class="cr-col">'
+          + '<div class="cr-col-head"><span class="cr-col-name">'+esc(r.name)+'</span>'
+          + '<span style="display:flex;align-items:center;gap:6px;"><span class="cr-col-count'+(w>0?' busy':'')+'">대기 '+w+'</span>'
+          + '<button class="cr-col-rm" data-rmroom="'+esc(r.name)+'" title="진료실 삭제">✕</button></span></div>'
+          + '<div class="cr-col-body">'
+          + (cardsHtml || '<div class="cr-col-empty">대기 환자 없음</div>')
+          + '</div></div>';
+      }).join('');
+      return '<div class="cr-dept-group"><div class="cr-dept-group-title">'+esc(dept)+'</div><div class="cr-board">'+cols+'</div></div>';
+    }).join('');
+
+    const discharged = state.patients.filter(p=>p.status==='discharged');
+    const anomaly = state.patients.filter(p=>p.status==='anomaly');
+
+    app.innerHTML =
+      '<div class="cr-topbar">'
+      + '<div class="cr-title">안내중앙 라우팅 보드<small>미니차트 배정 · 진료실 대기 현황</small></div>'
+      + '<div class="cr-topbtns">'
+      + '<button class="cr-btn cr-btn-ghost" id="cr-add-room">+ 진료실</button>'
+      + '<button class="cr-btn cr-btn-primary" id="cr-add-patient">+ 환자 등록</button>'
+      + '</div></div>'
+      + '<div class="cr-toolrow">'
+      + '<input type="text" class="cr-search-input" id="cr-search" placeholder="환자 이름/번호 검색" value="'+esc(searchQuery)+'"/>'
+      + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-open-list">📋 전체 명단</button>'
+      + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-undo">↩️ 실행취소</button>'
+      + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-reset-day">🗓️ 오늘 마감</button>'
+      + '</div>'
+      + '<div class="cr-legend">'
+      + '<span><span class="cr-dot" style="background:#1C2430"></span>대기중</span>'
+      + '<span><span class="cr-dot" style="background:#2F6FED"></span>진료중</span>'
+      + '<span><span class="cr-dot" style="background:#E07B1E"></span>해당부서 완료</span>'
+      + '<span><span class="cr-dot" style="background:#8A94A6"></span>귀가</span>'
+      + '<span><span class="cr-dot" style="background:#C22067"></span>이상상태</span>'
+      + '</div>'
+      + (groupsHtml || '<div class="cr-empty-note" style="padding:20px;">먼저 오늘 운영하는 진료실을 추가해주세요</div>')
+      + usPanelHtml()
+      + '<div class="cr-bottom">'
+      + '<div class="cr-mini-panel"><h4>🏠 귀가한 사람 ('+discharged.length+')</h4>'
+      + (discharged.length ? '<div class="cr-mini-list">'+discharged.map(p=>'<span class="cr-mini-chip discharge" data-open="'+p.id+'">'+esc(p.name)+' #'+esc(p.patientNo)+'</span>').join('')+'</div>' : '<div class="cr-empty-note">없음</div>')
+      + '</div>'
+      + '<div class="cr-mini-panel"><h4>⚠️ 이상상태 ('+anomaly.length+')</h4>'
+      + (anomaly.length ? '<div class="cr-mini-list">'+anomaly.map(p=>'<span class="cr-mini-chip anomaly" data-open="'+p.id+'">'+esc(p.name)+' #'+esc(p.patientNo)+'</span>').join('')+'</div>' : '<div class="cr-empty-note">없음</div>')
+      + '</div></div>';
+
+    bindBoardEvents();
+    if (modal) renderModal(); else removeModal();
+  }
+
+  function bindBoardEvents(){
+    document.getElementById('cr-add-room').onclick = () => { modal = {type:'room'}; lastRoomAddedDept=''; render(); };
+    document.getElementById('cr-add-patient').onclick = () => {
+      if (state.rooms.length === 0) { toast('먼저 진료실을 추가해주세요'); return; }
+      modal = {type:'new'}; render();
+    };
+    document.getElementById('cr-open-list').onclick = () => { modal = {type:'list'}; render(); };
+    document.getElementById('cr-undo').onclick = undoLast;
+    document.getElementById('cr-reset-day').onclick = () => { modal = {type:'daysummary'}; render(); };
+    const searchEl = document.getElementById('cr-search');
+    if (searchEl){
+      searchEl.oninput = (e) => { searchQuery = e.target.value; applySearch(); };
+    }
+    document.querySelectorAll('[data-open]').forEach(el=>{
+      el.onclick = () => { editMode = false; modal = { type:'detail', id: el.getAttribute('data-open') }; render(); };
+    });
+    document.querySelectorAll('[data-rmroom]').forEach(el=>{
+      el.onclick = (e) => { e.stopPropagation(); removeRoom(el.getAttribute('data-rmroom')); };
+    });
+    document.querySelectorAll('[data-sendus]').forEach(el=>{
+      el.onclick = (e) => { e.stopPropagation(); sendToUltrasoundNow(el.getAttribute('data-sendus')); };
+    });
+    applySearch();
+  }
+
+  function removeModal(){
+    const ex = document.querySelector('.cr-overlay');
+    if (ex) ex.remove();
+  }
+
+  function renderModal(){
+    removeModal();
+    const overlay = document.createElement('div');
+    overlay.className = 'cr-overlay';
+    overlay.onclick = (e) => { if (e.target === overlay && !pendingRxAsk) closeModalSafely(); };
+
+    let inner = '';
+    if (modal.type === 'room') inner = roomModal();
+    else if (modal.type === 'new') inner = newPatientModal();
+    else if (modal.type === 'detail') inner = detailModal(modal.id);
+    else if (modal.type === 'list') inner = listModal();
+    else if (modal.type === 'daysummary') inner = daySummaryHtml();
+
+    overlay.innerHTML = '<div class="cr-modal" onclick="event.stopPropagation()">'+inner+'</div>';
+    document.body.appendChild(overlay);
+    bindModalEvents();
+  }
+
+  function roomModal(){
+    const presetPills = PRESET_DEPTS.map(p=>'<button class="cr-check-pill" data-fillpreset="'+p+'"><span class="cr-box" style="border-radius:50%;">＋</span>'+p+'</button>').join('');
+    const depts = deptList();
+    const listHtml = depts.map(d => {
+      const rooms = roomsOfDept(d);
+      return '<div class="cr-room-list-dept">'+esc(d)+'</div>'
+        + rooms.map(r => '<div class="cr-room-list-item"><span>'+esc(r.name)+'</span><button class="cr-col-rm" data-rmroom2="'+esc(r.name)+'">✕</button></div>').join('');
+    }).join('');
+
+    return '<h3>진료실 추가</h3>'
+      + '<div class="cr-field"><label>자주 쓰는 부서 (탭하면 부서명 칸에 입력됨)</label><div class="cr-check-grid">'+presetPills+'</div></div>'
+      + '<div class="cr-inline-fields">'
+      + '<div class="cr-field"><label>부서명</label><input type="text" id="cr-dept-input" placeholder="예: 내과" value="'+esc(roomDraftDept)+'"/></div>'
+      + '<div class="cr-field"><label>진료실 번호 (선택)</label><input type="text" id="cr-roomno-input" placeholder="예: 01"/></div>'
+      + '</div>'
+      + '<button class="cr-btn cr-btn-primary" id="cr-room-add" style="width:100%;margin-bottom:14px;">진료실 추가</button>'
+      + (listHtml ? '<div class="cr-field"><label>오늘 등록된 진료실</label><div class="cr-room-list">'+listHtml+'</div></div>' : '')
+      + '<div class="cr-modal-actions"><button class="cr-btn cr-btn-ghost" id="cr-modal-close">완료</button></div>';
+  }
+
+  function newPatientModal(){
+    // 약국부는 진료 완료 후 처방 여부에 따라 자동으로 배정되는 곳이라
+    // 최초 등록 시 선택 항목에서 제외
+    const depts = deptList().filter(d => d !== '약국부');
+    const pills = depts.map(d=>'<button class="cr-check-pill" data-dept="'+esc(d)+'"><span class="cr-box"></span>'+esc(d)+'</button>').join('');
+    return '<h3>새 환자 등록</h3>'
+      + '<div class="cr-field"><label>환자번호</label><input type="text" id="cr-np-no" placeholder="예: 0142"/></div>'
+      + '<div class="cr-field"><label>이름</label><input type="text" id="cr-np-name" placeholder="예: 김재서"/></div>'
+      + '<div class="cr-field"><label>필요한 부서 (여러 개 선택)</label><div class="cr-check-grid">'+pills+'</div></div>'
+      + (depts.includes('초음파') ? '<div class="cr-field" id="cr-us-time-field" style="display:none"><label>초음파 예약시간</label><input type="time" id="cr-np-us-time"/></div>' : '')
+      + '<div class="cr-modal-actions"><button class="cr-btn cr-btn-ghost" id="cr-modal-close">취소</button><button class="cr-btn cr-btn-primary" id="cr-np-save">등록 완료</button></div>';
+  }
+
+  function detailModal(id){
+    const p = state.patients.find(x=>x.id===id);
+    if (!p) return '<h3>환자를 찾을 수 없습니다</h3><button class="cr-btn cr-btn-ghost" id="cr-modal-close">닫기</button>';
+
+    if (pendingRxAsk === id){
+      return '<h3>'+esc(p.name)+'님 — 모든 부서 서명 완료</h3>'
+        + '<p style="font-size:13px;color:#7C8798;margin:0 0 14px;">처방이 있나요?</p>'
+        + '<div class="cr-modal-actions">'
+        + '<button class="cr-btn cr-btn-ghost" id="cr-rx-no">처방 없음 · 귀가</button>'
+        + '<button class="cr-btn cr-btn-primary" id="cr-rx-yes">처방 있음 · 약국부로</button>'
+        + '</div>';
+    }
+
+    const room = roomOf(p.currentDept);
+    const curDeptName = room ? room.dept : p.currentDept;
+
+    const headerHtml = editMode
+      ? '<div class="cr-field"><label>환자번호</label><input type="text" id="cr-edit-no" value="'+esc(p.patientNo)+'"/></div>'
+        + '<div class="cr-field"><label>이름</label><input type="text" id="cr-edit-name" value="'+esc(p.name)+'"/></div>'
+        + '<div class="cr-modal-actions" style="margin-top:0 0 10px;margin-bottom:10px;">'
+        + '<button class="cr-btn cr-btn-ghost" id="cr-edit-cancel">취소</button>'
+        + '<button class="cr-btn cr-btn-primary" id="cr-edit-save">저장</button>'
+        + '</div>'
+      : '<h3 style="display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+        + '<span>'+esc(p.name)+' <span class="cr-mono" style="font-size:12px;color:#7C8798;">#'+esc(p.patientNo)+'</span></span>'
+        + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-edit-open">✏️ 수정</button>'
+        + '</h3>';
+
+    const deptRows = p.depts.map(d=>{
+      let tagCls='pending', label='대기 예정';
+      if (d.done) { tagCls='done'; label='완료'; }
+      else if (d.name === curDeptName) {
+        if (p.status==='in-consult'){ tagCls='current-c'; label=(p.currentDept||'')+' · 진료중'; }
+        else { tagCls='current-w'; label=(p.currentDept||'')+' · 대기중'; }
+      }
+      return '<div class="cr-detail-row"><span class="cr-dept-name">'+esc(d.name)+'</span><span class="cr-dept-tag '+tagCls+'">'+esc(label)+'</span></div>';
+    }).join('');
+
+    const imEntry = p.depts.find(d=>d.name==='내과');
+    const needsLab = imEntry && !imEntry.done;
+    const labRow = needsLab ? '<div class="cr-field"><label>랩부 검사결과 (내과)</label>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+      + '<button class="cr-btn '+(p.labReady?'cr-btn-primary':'cr-btn-ghost')+' cr-btn-sm" id="cr-toggle-lab"'+(p.skipLab?' disabled':'')+'>'
+      + (p.labReady ? '✅ 결과 도착함' : '⏳ 결과 대기중') + '</button>'
+      + '<button class="cr-btn '+(p.skipLab?'cr-btn-primary':'cr-btn-ghost')+' cr-btn-sm" id="cr-toggle-skiplab">'
+      + (p.skipLab ? '🚫 검사결과 필요없음 (해제)' : '🚫 검사결과 필요없음') + '</button>'
+      + '</div></div>' : '';
+
+    const historyRows = (p.history||[]).map((h,i)=>{
+      const label = h.doneAt ? (h.paused ? '중단됨' : '완료') : '진행 중';
+      const tagCls = h.doneAt ? 'done' : 'current-w';
+      const timeRange = fmtTime(h.startedAt) + ' ~ ' + (h.doneAt ? fmtTime(h.doneAt) : '');
+      return '<div class="cr-detail-row"><span class="cr-dept-name">'+(i+1)+'. '+esc(h.room)+'</span><span class="cr-dept-tag '+tagCls+'">'+timeRange+' · '+label+'</span></div>';
+    }).join('');
+    const historySection = historyRows ? '<div class="cr-field"><label>방문 순서</label><div>'+historyRows+'</div></div>' : '';
+
+    const usEntry = p.depts.find(d=>d.name==='초음파');
+    let usRow = '';
+    if (usEntry && !usEntry.done){
+      const canSend = curDeptName !== '초음파';
+      usRow = '<div class="cr-field"><label>초음파 예약시간</label>'
+        + '<div style="display:flex;gap:6px;">'
+        + '<input type="time" id="cr-us-time-edit" value="'+esc(p.usAptTime||'')+'" style="flex:1;padding:8px 9px;border-radius:8px;border:1px solid var(--line);font-size:13px;font-family:inherit;"/>'
+        + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-us-time-save">저장</button>'
+        + '</div>'
+        + (canSend ? '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-send-us" style="width:100%;margin-top:6px;">🔊 지금 초음파로 보내기</button>' : '<div class="cr-empty-note" style="margin-top:6px;">이미 초음파 진행 중입니다.</div>')
+        + '</div>';
+    }
+
+    const removable = p.depts.filter(d => !d.done && d.room !== p.currentDept);
+    const removeChips = removable.map(d=>'<span class="cr-chip" style="cursor:pointer;" data-rmdept="'+esc(d.name)+'" title="제거">'+esc(d.name)+' ✕</span>').join('');
+    const alreadyNames = p.depts.map(d=>d.name);
+    const addableDepts = deptList().filter(d => d !== '약국부' && !alreadyNames.includes(d));
+    const addChips = addableDepts.map(d=>'<button class="cr-check-pill" data-adddept="'+esc(d)+'"><span class="cr-box" style="border-radius:50%;">＋</span>'+esc(d)+'</button>').join('');
+    const deptEditRow = p.status === 'discharged' ? '' : '<div class="cr-field"><label>진료 과목 수정</label>'
+      + (removeChips ? '<div class="cr-card-chips" style="margin-bottom:6px;">'+removeChips+'</div>' : '')
+      + (addChips ? '<div class="cr-check-grid">'+addChips+'</div>' : '<div class="cr-empty-note">추가할 수 있는 부서가 없습니다</div>')
+      + '</div>';
+
+    const assignableRooms = state.rooms.filter(r => r.dept !== '초음파' && p.depts.some(d=>d.name===r.dept && !d.done));
+    const manualAssignRow = (p.status !== 'discharged' && p.status !== 'in-consult' && assignableRooms.length)
+      ? '<div class="cr-field"><label>직접 배정 (알고리즘 무시)</label>'
+        + '<div style="display:flex;gap:6px;">'
+        + '<select id="cr-manual-room" style="flex:1;padding:8px 9px;border-radius:8px;border:1px solid var(--line);font-size:13px;font-family:inherit;background:#fff;">'
+        + assignableRooms.map(r=>'<option value="'+esc(r.name)+'"'+(r.name===p.currentDept?' selected':'')+'>'+esc(r.name)+'</option>').join('')
+        + '</select>'
+        + '<button class="cr-btn cr-btn-primary cr-btn-sm" id="cr-manual-assign-btn">배정</button>'
+        + '</div></div>'
+      : '';
+
+    const noteRow = '<div class="cr-field"><label>특이사항 메모</label>'
+      + '<textarea id="cr-note-input" rows="2" placeholder="예: 거동 불편, 보호자 동반 등" style="width:100%;padding:9px 10px;border-radius:8px;border:1px solid var(--line);font-size:13px;font-family:inherit;resize:vertical;">'+esc(p.note||'')+'</textarea>'
+      + '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-note-save" style="margin-top:6px;">메모 저장</button></div>';
+
+    let actionBtns = '';
+    let callBtn = '';
+    if (p.status === 'discharged'){
+      actionBtns = '<div class="cr-empty-note">이미 귀가 처리된 환자입니다.</div>';
+    } else if (p.status === 'anomaly'){
+      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-unanomaly" style="width:100%">정상 상태로 복귀</button>';
+    } else if (p.status === 'us-wait'){
+      actionBtns = '<div class="cr-empty-note">다른 필요 진료는 모두 끝났고 초음파만 남았습니다. 위 버튼으로 예약시간에 맞춰 보내주세요.</div>';
+    } else if (curDeptName === '약국부' && p.status==='waiting'){
+      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-finish-pharmacy" style="width:100%">조제 완료 · 귀가 처리</button>';
+      callBtn = '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-copy-call" style="width:100%;margin-top:6px;">📋 호출 문구 복사</button>';
+    } else if (p.status === 'waiting'){
+      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-start-consult" style="width:100%">진료 시작 (미니차트 인계)</button>';
+      callBtn = '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-copy-call" style="width:100%;margin-top:6px;">📋 호출 문구 복사</button>';
+    } else if (p.status === 'in-consult'){
+      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-finish-dept" style="width:100%">'+esc(curDeptName)+' 서명 완료</button>';
+    }
+
+    return headerHtml
+      + '<div style="margin-bottom:12px;">'+deptRows+'</div>'
+      + historySection
+      + deptEditRow
+      + manualAssignRow
+      + labRow
+      + usRow
+      + noteRow
+      + '<div class="cr-field">'+actionBtns+callBtn+'</div>'
+      + '<div class="cr-modal-actions">'
+      + '<button class="cr-btn cr-btn-ghost" id="cr-modal-close">닫기</button>'
+      + (p.status!=='discharged' && p.status!=='anomaly' ? '<button class="cr-btn cr-btn-soft" id="cr-mark-anomaly">이상상태 표시</button>' : '')
+      + '<button class="cr-btn cr-btn-ghost" id="cr-delete-patient" style="color:#C22067;">삭제</button>'
+      + '</div>';
+  }
+
+  function closeModalSafely(){
+    // 진료실 추가 화면에서 입력만 하고 '추가' 버튼을 안 눌렀어도 닫을 때 자동으로 반영
+    // 단, 방금 방을 추가한 직후 남아있는 부서명(번호 없이)은 중복 등록하지 않음
+    if (modal && modal.type === 'room'){
+      const dv = document.getElementById('cr-dept-input');
+      const nv = document.getElementById('cr-roomno-input');
+      if (dv && dv.value.trim()){
+        const deptVal = dv.value.trim();
+        const noVal = nv ? nv.value.trim() : '';
+        const isLeftover = (!noVal && deptVal === lastRoomAddedDept);
+        if (!isLeftover){
+          const label = noVal ? deptVal+' '+noVal : deptVal;
+          const ok = addRoom(dv.value, nv ? nv.value : '');
+          if (ok) toast(label + ' 추가됨');
+        }
+      }
+    }
+    modal = null; roomDraftDept=''; lastRoomAddedDept=''; editMode=false; render();
+  }
+
+  function listModal(){
+    const statusText = { waiting:'대기중', 'in-consult':'진료중', discharged:'귀가', anomaly:'이상상태', 'us-wait':'초음파 대기' };
+    const sorted = state.patients.slice().sort((a,b)=>a.createdAt-b.createdAt);
+    const rows = sorted.map(p=>{
+      const loc = p.status==='discharged' ? '—' : (p.currentDept || '—');
+      return '<tr data-open="'+p.id+'" style="cursor:pointer;border-bottom:1px solid var(--line);">'
+        + '<td style="padding:7px 6px;" class="cr-mono">#'+esc(p.patientNo)+'</td>'
+        + '<td style="padding:7px 6px;font-weight:700;">'+esc(p.name)+'</td>'
+        + '<td style="padding:7px 6px;">'+esc(loc)+'</td>'
+        + '<td style="padding:7px 6px;">'+esc(statusText[p.status]||p.status)+'</td>'
+        + '</tr>';
+    }).join('');
+    const total = state.patients.length;
+    const active = state.patients.filter(p=>p.status==='waiting'||p.status==='in-consult').length;
+    const discharged = state.patients.filter(p=>p.status==='discharged').length;
+    const anomaly = state.patients.filter(p=>p.status==='anomaly').length;
+    return '<h3>오늘 전체 환자 명단</h3>'
+      + '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;">총 '+total+'명 · 진행중 '+active+' · 귀가 '+discharged+' · 이상 '+anomaly+'</div>'
+      + '<div style="max-height:56vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px;">'
+      + '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">'
+      + '<thead><tr style="text-align:left;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;">'
+      + '<th style="padding:7px 6px;">번호</th><th style="padding:7px 6px;">이름</th><th style="padding:7px 6px;">현재 위치</th><th style="padding:7px 6px;">상태</th></tr></thead>'
+      + '<tbody>' + (rows || '<tr><td colspan="4" style="padding:16px;color:var(--muted);text-align:center;">등록된 환자가 없습니다</td></tr>') + '</tbody>'
+      + '</table></div>'
+      + '<div class="cr-modal-actions"><button class="cr-btn cr-btn-ghost" id="cr-modal-close" style="width:100%;">닫기</button></div>';
+  }
+
+  function bindModalEvents(){
+    const close = document.getElementById('cr-modal-close');
+    if (close) close.onclick = closeModalSafely;
+
+    if (modal.type === 'room'){
+      document.querySelectorAll('[data-fillpreset]').forEach(el=>{
+        el.onclick = () => {
+          const inp = document.getElementById('cr-dept-input');
+          inp.value = el.getAttribute('data-fillpreset');
+          inp.focus();
+        };
+      });
+      const add = document.getElementById('cr-room-add');
+      if (add) add.onclick = () => {
+        const dv = document.getElementById('cr-dept-input').value;
+        const nv = document.getElementById('cr-roomno-input').value;
+        roomDraftDept = dv;
+        const ok = addRoom(dv, nv);
+        if (ok){
+          lastRoomAddedDept = dv.trim();
+          document.getElementById('cr-roomno-input').value = '';
+          toast((nv ? dv+' '+nv : dv) + ' 추가됨');
+          render();
+        }
+      };
+      document.querySelectorAll('[data-rmroom2]').forEach(el=>{
+        el.onclick = () => removeRoom(el.getAttribute('data-rmroom2'));
+      });
+    }
+
+    if (modal.type === 'new'){
+      let selected = [];
+      document.querySelectorAll('[data-dept]').forEach(el=>{
+        el.onclick = () => {
+          const d = el.getAttribute('data-dept');
+          const box = el.querySelector('.cr-box');
+          if (selected.includes(d)) { selected = selected.filter(x=>x!==d); el.classList.remove('on'); if (box) box.textContent=''; }
+          else { selected.push(d); el.classList.add('on'); if (box) box.textContent='✓'; }
+          const usField = document.getElementById('cr-us-time-field');
+          if (usField) usField.style.display = selected.includes('초음파') ? 'block' : 'none';
+        };
+      });
+      const save = document.getElementById('cr-np-save');
+      if (save) save.onclick = () => {
+        const no = document.getElementById('cr-np-no').value;
+        const name = document.getElementById('cr-np-name').value;
+        const usTimeEl = document.getElementById('cr-np-us-time');
+        const usTime = usTimeEl ? usTimeEl.value : '';
+        if (!no.trim() || !name.trim()) { toast('환자번호와 이름을 입력해주세요'); return; }
+        if (selected.length === 0) { toast('필요한 부서를 1개 이상 선택해주세요'); return; }
+        const ok = addPatient(no, name, selected, usTime);
+        if (ok) { modal = null; render(); }
+      };
+    }
+
+    if (modal.type === 'list'){
+      document.querySelectorAll('[data-open]').forEach(el=>{
+        el.onclick = () => { editMode=false; modal = { type:'detail', id: el.getAttribute('data-open') }; render(); };
+      });
+    }
+
+    if (modal.type === 'daysummary'){
+      const copyBtn = document.getElementById('cr-copy-summary');
+      if (copyBtn) copyBtn.onclick = () => {
+        const text = daySummaryText();
+        const done = () => toast('요약 텍스트 복사됨');
+        const fail = () => toast('복사 실패 — 직접 캡처해주세요');
+        if (navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).then(done).catch(fail);
+        } else {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            done();
+          } catch(e) { fail(); }
+        }
+      };
+      const confirmBtn = document.getElementById('cr-confirm-reset');
+      if (confirmBtn) confirmBtn.onclick = resetPatientsForNewDay;
+    }
+
+    if (modal.type === 'detail'){
+      const id = modal.id;
+      const b = (elId, fn) => { const el = document.getElementById(elId); if (el) el.onclick = fn; };
+      b('cr-toggle-lab', () => toggleLab(id));
+      b('cr-toggle-skiplab', () => toggleSkipLab(id));
+      b('cr-manual-assign-btn', () => {
+        const sel = document.getElementById('cr-manual-room');
+        if (sel) manualAssign(id, sel.value);
+      });
+      document.querySelectorAll('[data-rmdept]').forEach(el=>{
+        el.onclick = () => removeDeptFromPatient(id, el.getAttribute('data-rmdept'));
+      });
+      document.querySelectorAll('[data-adddept]').forEach(el=>{
+        el.onclick = () => addDeptToPatient(id, el.getAttribute('data-adddept'));
+      });
+      b('cr-send-us', () => sendToUltrasoundNow(id));
+      b('cr-us-time-save', () => {
+        const t = document.getElementById('cr-us-time-edit').value;
+        updateUsTime(id, t);
+      });
+      b('cr-note-save', () => {
+        const t = document.getElementById('cr-note-input').value;
+        saveNote(id, t);
+      });
+      b('cr-start-consult', () => startConsult(id));
+      b('cr-finish-dept', () => finishDept(id));
+      b('cr-finish-pharmacy', () => finishPharmacy(id));
+      b('cr-copy-call', () => copyCallText(id));
+      b('cr-mark-anomaly', () => { toggleAnomaly(id); modal=null; render(); });
+      b('cr-unanomaly', () => { toggleAnomaly(id); modal=null; render(); });
+      b('cr-delete-patient', () => { if (confirm('이 환자 기록을 삭제할까요?')) deletePatient(id); });
+      b('cr-rx-yes', () => resolvePrescription(id, true));
+      b('cr-rx-no', () => resolvePrescription(id, false));
+      b('cr-edit-open', () => { editMode = true; render(); });
+      b('cr-edit-cancel', () => { editMode = false; render(); });
+      b('cr-edit-save', () => {
+        const no = document.getElementById('cr-edit-no').value;
+        const name = document.getElementById('cr-edit-name').value;
+        updatePatientInfo(id, no, name);
+      });
+    }
+  }
+
+  loadState();
+})();
+</script>
+
+</body>
+</html>
