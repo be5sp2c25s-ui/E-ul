@@ -117,7 +117,7 @@
   .cr-inline-fields { display:flex; gap:8px; }
   .cr-inline-fields > div { flex:1; }
   .cr-check-grid { display:flex; flex-wrap:wrap; gap:6px; }
-  .cr-check-pill { border:1.5px solid var(--line); border-radius:20px; padding:6px 12px 6px 8px; font-size:12px; font-weight:700; cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:5px; background:#fff; }
+  .cr-check-pill { border:1.5px solid var(--line); border-radius:20px; padding:6px 12px 6px 8px; font-size:12px; font-weight:700; cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:5px; background:#fff; color:var(--ink); }
   .cr-check-pill .cr-box { width:15px; height:15px; border-radius:4px; border:1.5px solid var(--line); display:inline-flex; align-items:center; justify-content:center; font-size:10px; color:#fff; flex:none; }
   .cr-check-pill.on { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
   .cr-check-pill.on .cr-box { background:var(--accent); border-color:var(--accent); }
@@ -139,63 +139,65 @@
   .cr-toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:700; z-index:100; opacity:0; transition:opacity .25s ease; pointer-events:none;}
   .cr-toast.show { opacity:1; }
 
-  /* 🎨 숫자 테마 이스터에그 (222~999) */
+  /* 🎨 숫자 테마 이스터에그 (222~999)
+     상태색(대기/진료중/완료/귀가/이상)은 배경이 밝은 테마 vs 어두운 테마
+     딱 두 세트만 써서 항상 같은 의미로 인식되도록 고정 — 테마별로 안 바뀜 */
   body.theme-pink     { background: #FFF0F5; }
-  body.theme-sunset    { background: #FFF4E8; }
-  body.theme-ghost     { background: #1A1625; }
-  body.theme-party     { background: #FFFCF0; }
-  body.theme-hellfire  { background: #140505; }
-  body.theme-jackpot   { background: #1A1024; }
-  body.theme-fortune   { background: #0E1F16; }
-  body.theme-dark      { background: #12151C; }
+  body.theme-sunset   { background: #FFF4E8; }
+  body.theme-party    { background: #FFFCF0; }
+  body.theme-ghost    { background: #1A1625; }
+  body.theme-hellfire { background: #140505; }
+  body.theme-jackpot  { background: #1A1024; }
+  body.theme-infinity { background: #050B14; }
+  body.theme-dark     { background: #12151C; }
+
+  .cr-root.theme-pink, .cr-overlay.theme-pink,
+  .cr-root.theme-sunset, .cr-overlay.theme-sunset,
+  .cr-root.theme-party, .cr-overlay.theme-party {
+    --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
+    --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
+  }
+  .cr-root.theme-ghost, .cr-overlay.theme-ghost,
+  .cr-root.theme-hellfire, .cr-overlay.theme-hellfire,
+  .cr-root.theme-jackpot, .cr-overlay.theme-jackpot,
+  .cr-root.theme-infinity, .cr-overlay.theme-infinity,
+  .cr-root.theme-dark, .cr-overlay.theme-dark {
+    --wait-ink:#E7EAF0; --consult:#5B8DEF; --consult-bg:#1E2A42; --done:#E8A552; --done-bg:#3A2C16;
+    --discharge-bg:#2A2F3B; --discharge-ink:#9AA3B5; --anomaly:#F080B3; --anomaly-bg:#3A2030;
+  }
 
   .cr-root.theme-pink, .cr-overlay.theme-pink {
     --bg:#FFF0F5; --panel:#FFFFFF; --ink:#5C2A3D; --muted:#B87A96; --line:#F5C6D9;
-    --accent:#E8578A; --accent-dim:#FCE0EB; --wait-ink:#5C2A3D; --consult:#E8578A; --consult-bg:#FCE0EB;
-    --done:#D6336C; --done-bg:#FBD5E5; --discharge-bg:#F0D6E0; --discharge-ink:#8A5570;
-    --anomaly:#C2185B; --anomaly-bg:#F8C9DC;
+    --accent:#E8578A; --accent-dim:#FCE0EB;
   }
   .cr-root.theme-sunset, .cr-overlay.theme-sunset {
     --bg:#FFF4E8; --panel:#FFFFFF; --ink:#5A2A12; --muted:#C08050; --line:#F5D3A8;
-    --accent:#F2711F; --accent-dim:#FCE3C7; --wait-ink:#5A2A12; --consult:#D6336C; --consult-bg:#FBD9C7;
-    --done:#B23A1F; --done-bg:#F7DCC9; --discharge-bg:#EFD8C0; --discharge-ink:#8A5E3C;
-    --anomaly:#9B1B4C; --anomaly-bg:#F3C9D9;
-  }
-  .cr-root.theme-ghost, .cr-overlay.theme-ghost {
-    --bg:#1A1625; --panel:#241E33; --ink:#D8D3E8; --muted:#8A82A3; --line:#3A3350;
-    --accent:#8B6FD6; --accent-dim:#2E2748; --wait-ink:#D8D3E8; --consult:#8B6FD6; --consult-bg:#2E2748;
-    --done:#5FB89C; --done-bg:#1E3A32; --discharge-bg:#332C47; --discharge-ink:#9A93B3;
-    --anomaly:#B36FD6; --anomaly-bg:#3A2748;
+    --accent:#F2711F; --accent-dim:#FCE3C7;
   }
   .cr-root.theme-party, .cr-overlay.theme-party {
     --bg:#FFFCF0; --panel:#FFFFFF; --ink:#332B00; --muted:#A6934D; --line:#FFE49B;
-    --accent:#FF5C8A; --accent-dim:#FFE0EA; --wait-ink:#332B00; --consult:#3DBEFF; --consult-bg:#D6F0FF;
-    --done:#FFB627; --done-bg:#FFF0CF; --discharge-bg:#E8E2C8; --discharge-ink:#7A7040;
-    --anomaly:#9B5CFF; --anomaly-bg:#EBE0FF;
+    --accent:#FF5C8A; --accent-dim:#FFE0EA;
+  }
+  .cr-root.theme-ghost, .cr-overlay.theme-ghost {
+    --bg:#1A1625; --panel:#241E33; --ink:#D8D3E8; --muted:#8A82A3; --line:#3A3350;
+    --accent:#8B6FD6; --accent-dim:#2E2748;
   }
   .cr-root.theme-hellfire, .cr-overlay.theme-hellfire {
     --bg:#140505; --panel:#1F0A0A; --ink:#F5D9D9; --muted:#B36B6B; --line:#3A1414;
-    --accent:#E8383A; --accent-dim:#3A1414; --wait-ink:#F5D9D9; --consult:#E8383A; --consult-bg:#3A1414;
-    --done:#FF7A1F; --done-bg:#3A2410; --discharge-bg:#2A1414; --discharge-ink:#9A6B6B;
-    --anomaly:#FF2E63; --anomaly-bg:#3A1424;
+    --accent:#E8383A; --accent-dim:#3A1414;
   }
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot {
     --bg:#1A1024; --panel:#241633; --ink:#F5E6C8; --muted:#B39A6B; --line:#3A2A50;
-    --accent:#F2C230; --accent-dim:#3A2E14; --wait-ink:#F5E6C8; --consult:#B98BE8; --consult-bg:#2E2148;
-    --done:#F2C230; --done-bg:#3A2E14; --discharge-bg:#332747; --discharge-ink:#9A8AB3;
-    --anomaly:#E85CA8; --anomaly-bg:#3A1E38;
+    --accent:#F2C230; --accent-dim:#3A2E14;
   }
-  .cr-root.theme-fortune, .cr-overlay.theme-fortune {
-    --bg:#0E1F16; --panel:#153327; --ink:#E6F5EC; --muted:#7FB399; --line:#1F4A38;
-    --accent:#F2C230; --accent-dim:#2A3E20; --wait-ink:#E6F5EC; --consult:#3DD68C; --consult-bg:#153A2A;
-    --done:#F2C230; --done-bg:#3A2E14; --discharge-bg:#1A3328; --discharge-ink:#6FA98A;
-    --anomaly:#FF6B6B; --anomaly-bg:#3A1414;
+  /* 888: 옆으로 눕히면 무한대(∞) 기호 — 인피니티 갤럭시 컨셉 */
+  .cr-root.theme-infinity, .cr-overlay.theme-infinity {
+    --bg:#050B14; --panel:#0C1A2B; --ink:#DCEEF7; --muted:#6C93AD; --line:#173049;
+    --accent:#22D3EE; --accent-dim:#0F2A3A;
   }
   .cr-root.theme-dark, .cr-overlay.theme-dark {
     --bg:#12151C; --panel:#1B1F29; --ink:#E7EAF0; --muted:#8B95A8; --line:#2A2F3B;
-    --accent:#5B8DEF; --accent-dim:#1E2A42; --wait-ink:#E7EAF0; --consult:#5B8DEF; --consult-bg:#1E2A42;
-    --done:#E8A552; --done-bg:#3A2C16; --discharge-bg:#2A2F3B; --discharge-ink:#9AA3B5;
-    --anomaly:#F080B3; --anomaly-bg:#3A2030;
+    --accent:#5B8DEF; --accent-dim:#1E2A42;
   }
 
   .themed .cr-search-input, .themed .cr-card, .themed .cr-us-row, .themed .cr-us-badge,
@@ -249,15 +251,15 @@
   let lastRoomAddedDept = '';
   let currentTheme = 'light';
   const THEME_TABLE = {
-    '000': { key: 'light',    label: '☀️ 라이트모드로 복귀' },
-    '222': { key: 'pink',     label: '💗 발렌타인 핑크 발견!' },
-    '333': { key: 'sunset',   label: '🌇 선셋 오렌지 발견!' },
-    '444': { key: 'ghost',    label: '👻 으스스 고스트 발견!' },
-    '555': { key: 'party',    label: '🎉 파티 모드 발견! (태국어로 555=하하하)' },
-    '666': { key: 'hellfire', label: '😈 지옥불 모드 발견!' },
-    '777': { key: 'jackpot',  label: '🎰 잭팟 골드 발견!' },
-    '888': { key: 'fortune',  label: '💰 대박 머니 그린 발견!' },
-    '999': { key: 'dark',     label: '🌙 다크모드 발견!' }
+    '000': 'light',
+    '222': 'pink',
+    '333': 'sunset',
+    '444': 'ghost',
+    '555': 'party',
+    '666': 'hellfire',
+    '777': 'jackpot',
+    '888': 'infinity',
+    '999': 'dark'
   };
 
   function applyTheme(){
@@ -266,18 +268,9 @@
   }
 
   function triggerThemeEasterEgg(code){
-    const entry = THEME_TABLE[code];
-    if (!entry) return false;
-    if (entry.key === 'light'){
-      currentTheme = 'light';
-      toast('☀️ 라이트모드로 복귀');
-    } else if (currentTheme === entry.key){
-      currentTheme = 'light';
-      toast('☀️ 라이트모드로 복귀');
-    } else {
-      currentTheme = entry.key;
-      toast(entry.label);
-    }
+    const key = THEME_TABLE[code];
+    if (!key) return false;
+    currentTheme = (key === 'light' || currentTheme === key) ? 'light' : key;
     applyTheme();
     return true;
   }
@@ -991,11 +984,11 @@
       + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-reset-day">🗓️ 오늘 마감</button>'
       + '</div>'
       + '<div class="cr-legend">'
-      + '<span><span class="cr-dot" style="background:#1C2430"></span>대기중</span>'
-      + '<span><span class="cr-dot" style="background:#2F6FED"></span>진료중</span>'
-      + '<span><span class="cr-dot" style="background:#E07B1E"></span>해당부서 완료</span>'
-      + '<span><span class="cr-dot" style="background:#8A94A6"></span>귀가</span>'
-      + '<span><span class="cr-dot" style="background:#C22067"></span>이상상태</span>'
+      + '<span><span class="cr-dot" style="background:var(--wait-ink)"></span>대기중</span>'
+      + '<span><span class="cr-dot" style="background:var(--consult)"></span>진료중</span>'
+      + '<span><span class="cr-dot" style="background:var(--done)"></span>해당부서 완료</span>'
+      + '<span><span class="cr-dot" style="background:var(--discharge-ink)"></span>귀가</span>'
+      + '<span><span class="cr-dot" style="background:var(--anomaly)"></span>이상상태</span>'
       + '</div>'
       + (groupsHtml || '<div class="cr-empty-note" style="padding:20px;">먼저 오늘 운영하는 진료실을 추가해주세요</div>')
       + usPanelHtml()
