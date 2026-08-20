@@ -158,43 +158,6 @@
     background: linear-gradient(180deg, #BFEFFF 0%, #6FD8E0 45%, #1FB8C4 100%);
     position: relative;
   }
-  body.theme-summer::before, body.theme-summer::after {
-    content: '';
-    position: fixed;
-    inset: -20%;
-    z-index: 0;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    filter: blur(3px);
-  }
-  body.theme-summer::before {
-    background-image:
-      radial-gradient(ellipse 180px 40px at 15% 25%, rgba(255,255,255,0.55), transparent 70%),
-      radial-gradient(ellipse 140px 30px at 55% 60%, rgba(255,255,255,0.5), transparent 70%),
-      radial-gradient(ellipse 220px 50px at 80% 15%, rgba(255,255,255,0.45), transparent 70%),
-      radial-gradient(ellipse 160px 35px at 30% 85%, rgba(255,255,255,0.5), transparent 70%),
-      radial-gradient(ellipse 190px 45px at 90% 70%, rgba(255,255,255,0.4), transparent 70%);
-    animation: cr-caustic-a 8s ease-in-out infinite alternate;
-  }
-  body.theme-summer::after {
-    background-image:
-      radial-gradient(ellipse 150px 35px at 65% 30%, rgba(255,255,255,0.5), transparent 70%),
-      radial-gradient(ellipse 200px 45px at 10% 60%, rgba(255,255,255,0.45), transparent 70%),
-      radial-gradient(ellipse 130px 30px at 40% 10%, rgba(255,255,255,0.5), transparent 70%),
-      radial-gradient(ellipse 170px 40px at 85% 85%, rgba(255,255,255,0.4), transparent 70%),
-      radial-gradient(ellipse 210px 48px at 50% 50%, rgba(255,255,255,0.4), transparent 70%);
-    animation: cr-caustic-b 10s ease-in-out infinite alternate;
-  }
-  @keyframes cr-caustic-a {
-    0%   { transform: rotate(12deg) translate(0,0) scale(1); }
-    50%  { transform: rotate(12deg) translate(4%,-3%) scale(1.08); }
-    100% { transform: rotate(12deg) translate(-3%,4%) scale(1); }
-  }
-  @keyframes cr-caustic-b {
-    0%   { transform: rotate(-18deg) translate(0,0) scale(1); }
-    50%  { transform: rotate(-18deg) translate(-4%,3%) scale(1.06); }
-    100% { transform: rotate(-18deg) translate(3%,-4%) scale(1); }
-  }
   body.theme-matrix    { background: #000000; }
   body.theme-jackpot   { background: #1A1024; }
   body.theme-manuscript {
@@ -385,23 +348,16 @@
   .theme-winter .cr-title {
     text-shadow: 0 0 8px rgba(46,125,199,0.35);
   }
-  /* 카드/컬럼 위에 눈이 소복이 쌓인 느낌 — 글자 영역은 안 건드림 */
-  .theme-winter .cr-card, .theme-winter .cr-col, .theme-winter .cr-modal, .theme-winter .cr-mini-panel { position: relative; overflow: visible; }
-  .theme-winter .cr-card::before, .theme-winter .cr-col::before,
-  .theme-winter .cr-modal::before, .theme-winter .cr-mini-panel::before {
+  /* 카드/컬럼 위에 살짝 쌓인 눈 — 글자 영역은 안 건드림 */
+  .theme-winter .cr-card, .theme-winter .cr-col { position: relative; }
+  .theme-winter .cr-card::before, .theme-winter .cr-col::before {
     content: '';
     position: absolute;
-    top: -8px; left: -4px; right: -4px;
-    height: 20px;
-    background-image:
-      radial-gradient(circle 10px at 6% 55%, #fff 95%, transparent 100%),
-      radial-gradient(circle 12px at 22% 40%, #fff 95%, transparent 100%),
-      radial-gradient(circle 9px at 36% 58%, #fff 95%, transparent 100%),
-      radial-gradient(circle 13px at 52% 38%, #fff 95%, transparent 100%),
-      radial-gradient(circle 10px at 68% 56%, #fff 95%, transparent 100%),
-      radial-gradient(circle 12px at 84% 40%, #fff 95%, transparent 100%),
-      radial-gradient(circle 9px at 97% 55%, #fff 95%, transparent 100%);
-    filter: blur(4px) contrast(30) drop-shadow(0 2px 2px rgba(46,125,199,0.15));
+    top: -3px; left: 10%; right: 10%;
+    height: 9px;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.95) 55%, rgba(255,255,255,0) 100%);
+    border-radius: 50%;
+    opacity: 0.9;
     pointer-events: none;
     z-index: 2;
   }
