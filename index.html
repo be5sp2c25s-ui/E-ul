@@ -148,7 +148,9 @@
      상태색(대기/진료중/완료/귀가/이상)은 배경이 밝은 테마 vs 어두운 테마
      딱 두 세트만 써서 항상 같은 의미로 인식되도록 고정 — 테마별로 안 바뀜 */
   body.theme-pink      { background: #FFF0F5; }
-  body.theme-cyberpunk { background: linear-gradient(160deg, #030303 0%, #1C1C20 50%, #050505 100%); }
+  body.theme-winter {
+    background: linear-gradient(180deg, #EAF3FB 0%, #D8E9F5 55%, #C7DEEE 100%);
+  }
   body.theme-retro     { background: #008080; }
   body.theme-glass      {
     background:
@@ -171,11 +173,11 @@
   .cr-root.theme-pink, .cr-overlay.theme-pink,
   .cr-root.theme-retro, .cr-overlay.theme-retro,
   .cr-root.theme-manuscript, .cr-overlay.theme-manuscript,
+  .cr-root.theme-winter, .cr-overlay.theme-winter,
   .cr-root.theme-glass, .cr-overlay.theme-glass {
     --wait-ink:#1C2430; --consult:#2F6FED; --consult-bg:#EAF0FE; --done:#E07B1E; --done-bg:#FBEBD9;
     --discharge-bg:#D8DCE4; --discharge-ink:#565F6E; --anomaly:#C22067; --anomaly-bg:#FBDDEA;
   }
-  .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk,
   .cr-root.theme-matrix, .cr-overlay.theme-matrix,
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot,
   .cr-root.theme-dark, .cr-overlay.theme-dark {
@@ -187,10 +189,11 @@
     --bg:#FFF0F5; --panel:#FFFFFF; --ink:#5C2A3D; --muted:#B87A96; --line:#F5C6D9;
     --accent:#E8578A; --accent-dim:#FCE0EB;
   }
-  /* 333: 사이버펑크 네온 — 회색 그라데이션 배경 + 화이트 네온 테두리 글로우 */
-  .cr-root.theme-cyberpunk, .cr-overlay.theme-cyberpunk {
-    --bg:#0A0A0C; --panel:#131316; --ink:#F5F5F7; --muted:#8A8A93; --line:#2A2A2E;
-    --accent:#F5F5F7; --accent-dim:#2A2A2E;
+  /* 333: 겨울 눈 — 얼음빛 배경 + 흩날리는 눈송이 + 서리 낀 카드 테두리 */
+  .cr-root.theme-winter, .cr-overlay.theme-winter {
+    --bg: rgba(255,255,255,0.55); --panel: rgba(255,255,255,0.75);
+    --ink:#1F3A52; --muted:#6B8CA6; --line:#BFDCF0;
+    --accent:#2E7DC7; --accent-dim:#DCEEF9;
   }
   /* 555: 레트로 윈도우95/98 — 은색 창, 파란 타이틀바, 각진 3D 베젤 */
   .cr-root.theme-retro, .cr-overlay.theme-retro {
@@ -326,27 +329,27 @@
     border: 1px solid rgba(255,255,255,0.5);
   }
 
-  /* 사이버펑크 네온 글로우 테두리 (은은하게 — 텍스트 가독성 우선) */
-  .theme-cyberpunk .cr-col, .theme-cyberpunk .cr-modal, .theme-cyberpunk .cr-mini-panel {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 7px color-mix(in srgb, var(--accent) 40%, transparent);
+  /* 333: 겨울 — 서리 낀 반투명 유리 카드 + 얼음빛 프로스트 글로우 */
+  .theme-winter.cr-root, .theme-winter.cr-overlay {
+    backdrop-filter: blur(10px) saturate(120%);
+    -webkit-backdrop-filter: blur(10px) saturate(120%);
   }
-  .theme-cyberpunk .cr-card {
-    border-width: 1.5px;
-    box-shadow: 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+  .theme-winter .cr-col, .theme-winter .cr-modal, .theme-winter .cr-mini-panel, .theme-winter .cr-card {
+    background: var(--panel) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-color: var(--line) !important;
+    box-shadow: 0 2px 14px rgba(46,125,199,0.12), inset 0 1px 0 rgba(255,255,255,0.6);
   }
-  .theme-cyberpunk .cr-card.st-waiting   { border-color: var(--wait-ink); box-shadow: 0 0 5px color-mix(in srgb, var(--wait-ink) 45%, transparent); }
-  .theme-cyberpunk .cr-card.st-consult   { border-color: var(--consult); box-shadow: 0 0 7px color-mix(in srgb, var(--consult) 55%, transparent); }
-  .theme-cyberpunk .cr-card.st-done      { border-color: var(--done); box-shadow: 0 0 7px color-mix(in srgb, var(--done) 55%, transparent); }
-  .theme-cyberpunk .cr-card.st-discharge { border-color: var(--discharge-ink); box-shadow: 0 0 5px color-mix(in srgb, var(--discharge-ink) 40%, transparent); }
-  .theme-cyberpunk .cr-card.st-anomaly   { border-color: var(--anomaly); box-shadow: 0 0 7px color-mix(in srgb, var(--anomaly) 55%, transparent); }
-  .theme-cyberpunk .cr-btn-primary {
-    color: #0A0A0C;
-    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 55%, transparent);
+  .theme-winter .cr-card.st-waiting   { border-left-color: var(--wait-ink) !important; }
+  .theme-winter .cr-card.st-consult   { border-left-color: var(--consult) !important; }
+  .theme-winter .cr-card.st-done      { border-left-color: var(--done) !important; }
+  .theme-winter .cr-card.st-discharge { border-left-color: var(--discharge-ink) !important; }
+  .theme-winter .cr-card.st-anomaly   { border-left-color: var(--anomaly) !important; }
+  .theme-winter .cr-title {
+    text-shadow: 0 0 8px rgba(46,125,199,0.35);
   }
-  .theme-cyberpunk .cr-title {
-    text-shadow: 0 0 5px color-mix(in srgb, var(--accent) 45%, transparent);
-  }
+  .theme-winter .cr-title::after { content: ' ❄️'; }
 
   /* 222 발렌타인: 떨어지는 하트 */
   #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
@@ -356,6 +359,17 @@
     10%  { opacity:0.9; }
     90%  { opacity:0.9; }
     100% { transform: translateY(110vh) rotate(360deg); opacity:0; }
+  }
+
+  /* 333 겨울: 흩날리는 눈송이 */
+  #cr-snow { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  #cr-snow span { position:absolute; top:-10%; color:#fff; text-shadow:0 0 4px rgba(120,170,220,0.6); will-change:transform,opacity; }
+  @keyframes cr-snow-fall {
+    0%   { transform: translate(0,-10vh);       opacity:0; }
+    10%  { opacity:0.95; }
+    50%  { transform: translate(18px, 50vh); }
+    90%  { opacity:0.95; }
+    100% { transform: translate(-18px, 110vh); opacity:0; }
   }
 </style>
 
@@ -405,7 +419,7 @@
   const THEME_TABLE = {
     '000': 'light',
     '222': 'pink',
-    '333': 'cyberpunk',
+    '333': 'winter',
     '444': 'glass',
     '555': 'retro',
     '666': 'matrix',
@@ -478,10 +492,34 @@
     }, 50);
   }
 
+  function renderSnow(){
+    let el = document.getElementById('cr-snow');
+    if (currentTheme !== 'winter'){
+      if (el) el.remove();
+      return;
+    }
+    if (el) return; // 이미 떠 있으면 재생성해서 애니메이션 끊기지 않게 둠
+    el = document.createElement('div');
+    el.id = 'cr-snow';
+    const flakes = ['❄','❅','❆','•'];
+    let html = '';
+    for (let i = 0; i < 26; i++){
+      const left = Math.random() * 100;
+      const delay = Math.random() * 8;
+      const duration = 6 + Math.random() * 8;
+      const size = 8 + Math.random() * 16;
+      const flake = flakes[Math.floor(Math.random() * flakes.length)];
+      html += '<span style="left:'+left+'%;font-size:'+size+'px;animation:cr-snow-fall '+duration+'s linear '+delay+'s infinite;">'+flake+'</span>';
+    }
+    el.innerHTML = html;
+    document.body.appendChild(el);
+  }
+
   function applyTheme(){
     document.body.className = currentTheme !== 'light' ? 'themed theme-' + currentTheme : '';
     renderHearts();
     renderMatrixRain();
+    renderSnow();
     render();
   }
 
