@@ -76,6 +76,7 @@
   .cr-card.st-anomaly { border-left-color: var(--anomaly); background: var(--anomaly-bg); }
   .cr-card-top { display:flex; justify-content:space-between; align-items:baseline; gap:6px; }
   .cr-card-name { font-weight:800; font-size:13px; }
+  .cr-status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex:none; margin-right:5px; box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
   .cr-card-no { font-size:10.5px; color:var(--muted); }
   .cr-card-status { font-size:10px; font-weight:700; margin-top:3px; }
   .cr-card-status.consult { color:var(--consult); }
@@ -147,11 +148,11 @@
   body.theme-party     { background: #FFFCF0; }
   body.theme-glass      {
     background:
-      radial-gradient(circle at 12% 18%, #FFB4E0 0%, transparent 42%),
-      radial-gradient(circle at 88% 12%, #9FDFFF 0%, transparent 42%),
-      radial-gradient(circle at 50% 90%, #C9B6FF 0%, transparent 46%),
-      radial-gradient(circle at 92% 82%, #B9FFE0 0%, transparent 42%),
-      #EEF0F5;
+      radial-gradient(circle at 12% 18%, rgba(255,180,224,0.4) 0%, transparent 45%),
+      radial-gradient(circle at 88% 12%, rgba(159,223,255,0.4) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(201,182,255,0.35) 0%, transparent 48%),
+      radial-gradient(circle at 92% 82%, rgba(185,255,224,0.35) 0%, transparent 45%),
+      #F5F6F9;
   }
   body.theme-hellfire  { background: #140505; }
   body.theme-jackpot   { background: #1A1024; }
@@ -230,6 +231,12 @@
     border: 1px solid rgba(255,255,255,0.5) !important;
     box-shadow: 0 4px 16px rgba(31,38,60,0.08), inset 0 1px 0 rgba(255,255,255,0.55);
   }
+  /* 위의 border 재설정이 카드 왼쪽 상태색 테두리까지 지워버리므로 되살림 */
+  .theme-glass .cr-card.st-waiting   { border-left: 4px solid var(--wait-ink) !important; }
+  .theme-glass .cr-card.st-consult   { border-left: 4px solid var(--consult) !important; background: var(--consult-bg) !important; }
+  .theme-glass .cr-card.st-done      { border-left: 4px solid var(--done) !important; background: var(--done-bg) !important; }
+  .theme-glass .cr-card.st-discharge { border-left: 4px solid var(--discharge-ink) !important; background: var(--discharge-bg) !important; }
+  .theme-glass .cr-card.st-anomaly   { border-left: 4px solid var(--anomaly) !important; background: var(--anomaly-bg) !important; }
   .theme-glass .cr-btn-primary {
     box-shadow: 0 4px 12px rgba(10,132,255,0.35), inset 0 1px 0 rgba(255,255,255,0.4);
   }
@@ -974,9 +981,11 @@
     const noteFlag = p.note ? '<span class="cr-note-flag" title="'+esc(p.note)+'">📝</span>' : '';
     const hist = cs==='done' ? historyRecordFor(p, roomLabel) : null;
     const timeStr = hist ? fmtTime(hist.doneAt) : '';
+    const dotVarMap = { waiting:'--wait-ink', 'in-consult':'--consult', done:'--done', discharged:'--discharge-ink', anomaly:'--anomaly' };
+    const dotVar = dotVarMap[cs] || '--wait-ink';
     return '<div class="cr-card '+cls+'" data-open="'+p.id+'">'
       + '<div class="cr-card-top">'
-      + '<span class="cr-card-name">'+esc(p.name)+'</span>'
+      + '<span class="cr-card-name"><span class="cr-status-dot" style="background:var('+dotVar+')"></span>'+esc(p.name)+'</span>'
       + '<span style="display:flex;align-items:center;gap:5px;">'+labFlag+noteFlag+'<span class="cr-card-no cr-mono">#'+esc(p.patientNo)+'</span></span>'
       + '</div>'
       + '<div class="cr-card-status '+(textClsMap[cs]||'waiting')+'">'+statusLabel(roomLabel, cs, timeStr)+'</div>'
