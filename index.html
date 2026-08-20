@@ -213,8 +213,14 @@
     box-shadow: 0 0 10px rgba(0,240,255,0.35), inset 0 0 16px rgba(0,240,255,0.04);
   }
   .theme-cyberpunk .cr-card {
-    box-shadow: 0 0 6px rgba(0,240,255,0.2), 0 0 2px rgba(255,46,154,0.25);
+    border-width: 1.5px;
+    box-shadow: 0 0 6px rgba(0,240,255,0.15);
   }
+  .theme-cyberpunk .cr-card.st-waiting   { border-color: var(--wait-ink); box-shadow: 0 0 9px var(--wait-ink); }
+  .theme-cyberpunk .cr-card.st-consult   { border-color: var(--consult); box-shadow: 0 0 11px var(--consult); }
+  .theme-cyberpunk .cr-card.st-done      { border-color: var(--done); box-shadow: 0 0 11px var(--done); }
+  .theme-cyberpunk .cr-card.st-discharge { border-color: var(--discharge-ink); box-shadow: 0 0 7px var(--discharge-ink); }
+  .theme-cyberpunk .cr-card.st-anomaly   { border-color: var(--anomaly); box-shadow: 0 0 11px var(--anomaly); }
   .theme-cyberpunk .cr-btn-primary {
     box-shadow: 0 0 12px var(--accent);
   }
