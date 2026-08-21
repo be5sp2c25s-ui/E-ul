@@ -79,6 +79,8 @@
   .cr-col-body { padding:9px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; flex:1; }
   .cr-col-empty { color:var(--muted); font-size:11.5px; text-align:center; padding:18px 4px; }
   .cr-col-rm { background:none; border:none; cursor:pointer; color:var(--muted); font-size:14px; padding:2px 4px; }
+  .cr-col-unavail { opacity:0.55; }
+  .cr-avail-badge { font-size:9px; font-weight:800; padding:1px 6px; border-radius:6px; background:var(--anomaly-bg); color:var(--anomaly); margin-left:4px; vertical-align:middle; }
 
   .cr-card { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; position:relative; background:#fff; border-left:4px solid var(--wait-ink); }
   .cr-card.st-consult { border-left-color: var(--consult); background: var(--consult-bg); }
@@ -699,6 +701,10 @@
 
   function migrateState(){
     // 예전 형식(부서 항목에 room 필드가 없던 시절) 데이터 호환
+    state.rooms.forEach(r=>{
+      if (r.unavailable === undefined) r.unavailable = false;
+      if (r.reasonLabel === undefined) r.reasonLabel = '';
+    });
     state.patients.forEach(p=>{
       if (p.note === undefined) p.note = '';
       if (p.skipLab === undefined) p.skipLab = false;
@@ -774,13 +780,16 @@
     // 대기중이든 진료중이든 그 방에 사람이 있으면 '차 있는' 것으로 취급 — 빈 방이 항상 최우선
     return state.patients.filter(p => p.currentDept === roomName && (p.status === 'waiting' || p.status === 'in-consult')).length;
   }
+  function deptHasAvailableRoom(dept){
+    return roomsOfDept(dept).some(r => !r.unavailable);
+  }
   function deptBestLoad(dept){
-    const rooms = roomsOfDept(dept);
+    const rooms = roomsOfDept(dept).filter(r => !r.unavailable);
     if (!rooms.length) return Infinity;
     return Math.min(...rooms.map(r => roomLoad(r.name)));
   }
   function pickRoomInDept(dept){
-    const rooms = roomsOfDept(dept);
+    const rooms = roomsOfDept(dept).filter(r => !r.unavailable);
     if (!rooms.length) return null;
     const sorted = [...rooms].sort((a,b) => roomLoad(a.name) - roomLoad(b.name));
     return sorted[0].name;
@@ -793,8 +802,6 @@
     const remaining = patient.depts.filter(d => !d.done && d.name !== '초음파');
     if (remaining.length === 0) return null;
 
-    const availDepts = deptList();
-
     const hasIM = remaining.some(d => d.name === '내과');
     const imReady = patient.labReady || patient.skipLab;
     const nonIM = remaining.filter(d => d.name !== '내과');
@@ -804,7 +811,8 @@
     else if (hasIM && !imReady) candidates = nonIM.length ? nonIM : remaining;
     else candidates = remaining;
 
-    const existing = candidates.filter(d => availDepts.includes(d.name));
+    // 자리비움/마감으로 지금 배정 가능한 방이 하나도 없는 부서는 뒤로 밀림
+    const existing = candidates.filter(d => deptHasAvailableRoom(d.name));
     const pool = existing.length ? existing : candidates;
 
     // 부서 비교는 그 부서 안의 '가장 널널한(빈) 방' 기준 — 방 하나가 진료중이어도
@@ -822,7 +830,7 @@
     const label = roomNo ? (deptName + ' ' + roomNo) : deptName;
     if (state.rooms.some(r => r.name === label)) { toast('이미 있는 진료실입니다'); return false; }
     snapshotForUndo();
-    state.rooms.push({ id: uid(), name: label, dept: deptName });
+    state.rooms.push({ id: uid(), name: label, dept: deptName, unavailable: false, reasonLabel: '' });
     saveState();
     return true;
   }
@@ -832,6 +840,23 @@
     if (inUse) { toast('해당 진료실에 대기/진료 중인 환자가 있어 삭제할 수 없습니다'); return; }
     snapshotForUndo();
     state.rooms = state.rooms.filter(r => r.name !== name);
+    saveState(); render();
+  }
+
+  function cycleRoomAvailability(name){
+    const room = roomOf(name);
+    if (!room) return;
+    snapshotForUndo();
+    if (!room.unavailable){
+      room.unavailable = true; room.reasonLabel = '자리비움';
+      toast(name + ' → 자리비움 (자동배정에서 제외됨)');
+    } else if (room.reasonLabel === '자리비움'){
+      room.reasonLabel = '진료마감';
+      toast(name + ' → 진료마감');
+    } else {
+      room.unavailable = false; room.reasonLabel = '';
+      toast(name + ' 다시 사용 가능');
+    }
     saveState(); render();
   }
 
@@ -1359,9 +1384,10 @@
             return tA - tB;
           })
           .map(x=>patientCard(x.p, x.e, r.name)).join('');
-        return '<div class="cr-col">'
-          + '<div class="cr-col-head"><span class="cr-col-name">'+esc(r.name)+'</span>'
+        return '<div class="cr-col'+(r.unavailable?' cr-col-unavail':'')+'">'
+          + '<div class="cr-col-head"><span class="cr-col-name">'+esc(r.name)+(r.unavailable?' <span class="cr-avail-badge">'+esc(r.reasonLabel)+'</span>':'')+'</span>'
           + '<span style="display:flex;align-items:center;gap:6px;"><span class="cr-col-count'+(w>0?' busy':'')+'">대기 '+w+'</span>'
+          + '<button class="cr-col-rm" data-availroom="'+esc(r.name)+'" title="자리비움/마감 전환">'+(r.unavailable?'↩️':'⏸')+'</button>'
           + '<button class="cr-col-rm" data-rmroom="'+esc(r.name)+'" title="진료실 삭제">✕</button></span></div>'
           + '<div class="cr-col-body">'
           + (cardsHtml || '<div class="cr-col-empty">대기 환자 없음</div>')
@@ -1425,6 +1451,9 @@
     });
     document.querySelectorAll('[data-rmroom]').forEach(el=>{
       el.onclick = (e) => { e.stopPropagation(); removeRoom(el.getAttribute('data-rmroom')); };
+    });
+    document.querySelectorAll('[data-availroom]').forEach(el=>{
+      el.onclick = (e) => { e.stopPropagation(); cycleRoomAvailability(el.getAttribute('data-availroom')); };
     });
     document.querySelectorAll('[data-sendus]').forEach(el=>{
       el.onclick = (e) => { e.stopPropagation(); sendToUltrasoundNow(el.getAttribute('data-sendus')); };
@@ -1567,7 +1596,7 @@
       + (addChips ? '<div class="cr-check-grid">'+addChips+'</div>' : '<div class="cr-empty-note">추가할 수 있는 부서가 없습니다</div>')
       + '</div>';
 
-    const assignableRooms = state.rooms.filter(r => r.dept !== '초음파' && p.depts.some(d=>d.name===r.dept && !d.done));
+    const assignableRooms = state.rooms.filter(r => r.dept !== '초음파' && !r.unavailable && p.depts.some(d=>d.name===r.dept && !d.done));
     const manualAssignRow = (p.status !== 'discharged' && p.status !== 'in-consult' && assignableRooms.length)
       ? '<div class="cr-field"><label>직접 배정 (알고리즘 무시)</label>'
         + '<div style="display:flex;gap:6px;">'
@@ -1589,7 +1618,12 @@
     } else if (p.status === 'anomaly'){
       actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-unanomaly" style="width:100%">정상 상태로 복귀</button>';
     } else if (p.status === 'us-wait'){
-      actionBtns = '<div class="cr-empty-note">다른 필요 진료는 모두 끝났고 초음파만 남았습니다. 위 버튼으로 예약시간에 맞춰 보내주세요.</div>';
+      const stillNeeded = p.depts.filter(d=>!d.done && d.name!=='초음파');
+      if (stillNeeded.length){
+        actionBtns = '<div class="cr-empty-note">'+stillNeeded.map(d=>esc(d.name)).join(', ')+' 진료실이 지금 자리비움/마감 상태라 배정할 수 없습니다. 다시 열리면 자동으로 배정됩니다.</div>';
+      } else {
+        actionBtns = '<div class="cr-empty-note">다른 필요 진료는 모두 끝났고 초음파만 남았습니다. 위 버튼으로 예약시간에 맞춰 보내주세요.</div>';
+      }
     } else if (curDeptName === '약국부' && p.status==='waiting'){
       actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-finish-pharmacy" style="width:100%">조제 완료 · 귀가 처리</button>';
       callBtn = '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-copy-call" style="width:100%;margin-top:6px;">📋 호출 문구 복사</button>';
