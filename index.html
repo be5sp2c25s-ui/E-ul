@@ -48,7 +48,7 @@
   .cr-root *, .cr-overlay * { box-sizing: border-box; }
   .cr-mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; letter-spacing: 0.3px; }
 
-  .cr-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .cr-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; position:relative; z-index:1; }
   .cr-title { font-size:18px; font-weight:800; letter-spacing:-0.3px; }
   .cr-title small { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; letter-spacing:0.2px;}
   .cr-topbtns { display:flex; gap:8px; }
@@ -61,7 +61,7 @@
   .cr-btn-sm { padding:6px 10px; font-size:11.5px; border-radius:7px; }
   .cr-btn:disabled { opacity:.4; cursor:not-allowed; }
 
-  .cr-toolrow { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+  .cr-toolrow { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; position:relative; z-index:1; }
   .cr-search-input { flex:1; min-width:160px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
   .cr-card.cr-search-hit { outline:3px solid var(--accent); outline-offset:1px; }
   .cr-legend { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; font-size:11px; color:var(--muted); font-weight:600;}
@@ -71,7 +71,7 @@
   .cr-dept-group { margin-bottom:14px; }
   .cr-dept-group-title { font-size:12px; font-weight:800; color:var(--muted); margin:0 0 6px 2px; text-transform:none; }
   .cr-board { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; }
-  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; max-height:420px; }
+  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; max-height:420px; position:relative; z-index:1; }
   .cr-col-head { padding:11px 12px 9px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
   .cr-col-name { font-weight:800; font-size:13px; }
   .cr-col-count { font-size:11px; font-weight:700; color:var(--muted); background:var(--bg); border-radius:20px; padding:2px 8px; }
@@ -97,7 +97,7 @@
   .theme-matrix .cr-room-switch:not(.off) .cr-switch-thumb { box-shadow:0 0 6px var(--accent); }
   .theme-matrix .cr-room-switch.off .cr-switch-thumb { background:#333; }
 
-  .cr-card { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; position:relative; background:#fff; border-left:4px solid var(--wait-ink); }
+  .cr-card { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; position:relative; z-index:1; background:#fff; border-left:4px solid var(--wait-ink); }
   .cr-card.st-consult { border-left-color: var(--consult); background: var(--consult-bg); }
   .cr-card.st-waiting { border-left-color: var(--wait-ink); }
   .cr-card.st-done { border-left-color: var(--done); background: var(--done-bg); }
@@ -150,7 +150,7 @@
   #cr-chat-text { flex:1; min-width:0; }
   .cr-chat-input-row button { border:2px outset #E0E0E0; background:#C0C0C0; font-weight:700; font-size:12px; cursor:pointer; padding:0 8px; }
   .cr-easter:hover { opacity:1; color:var(--muted); }
-  .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+  .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; position:relative; z-index:1; }
   .cr-mini-panel h4 { margin:0 0 8px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px; }
   .cr-mini-list { display:flex; flex-wrap:wrap; gap:6px; }
   .cr-mini-chip { font-size:11px; font-weight:700; padding:5px 9px; border-radius:8px; cursor:pointer; }
@@ -446,7 +446,7 @@
   }
 
   /* 222 발렌타인: 떨어지는 하트 */
-  #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:-1; }
+  #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
   #cr-hearts span { position:absolute; top:-10%; will-change:transform,opacity; }
   @keyframes cr-heart-fall {
     0%   { transform: translateY(-10vh) rotate(0deg);   opacity:0; }
@@ -467,7 +467,7 @@
   }
 
   /* 444 여름: 위로 떠오르는 기포/열대 이모지 */
-  #cr-bubbles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:-1; }
+  #cr-bubbles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
   #cr-bubbles span { position:absolute; bottom:-10%; will-change:transform,opacity; }
   #cr-bubbles span.circ {
     border-radius: 50%;
