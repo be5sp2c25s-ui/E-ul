@@ -62,9 +62,11 @@
   .cr-btn:disabled { opacity:.4; cursor:not-allowed; }
 
   .cr-toolrow { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; position:relative; z-index:1; }
-  .cr-deco { display:none; position:absolute; right:0; top:-34px; pointer-events:none; line-height:0; }
+  .cr-deco { display:none; position:absolute; right:4px; top:-32px; pointer-events:none; line-height:0; }
   body.theme-summer .cr-deco-summer { display:block; }
   body.theme-winter .cr-deco-winter { display:block; }
+  .cr-search-wrap { position:relative; flex:1; min-width:160px; }
+  .cr-search-wrap .cr-search-input { width:100%; }
   .cr-search-input { flex:1; min-width:160px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
   .cr-card.cr-search-hit { outline:3px solid var(--accent); outline-offset:1px; }
   .cr-legend { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; font-size:11px; color:var(--muted); font-weight:600;}
@@ -1493,6 +1495,7 @@
       + '<button class="cr-btn cr-btn-primary" id="cr-add-patient">+ 환자 등록</button>'
       + '</div></div>'
       + '<div class="cr-toolrow">'
+      + '<div class="cr-search-wrap">'
       + '<span class="cr-deco cr-deco-summer">'
       + '<svg viewBox="0 0 160 44" width="130" height="36" xmlns="http://www.w3.org/2000/svg">'
       + '<circle cx="18" cy="8" r="2" fill="#BFEFFF" opacity="0.85"/><circle cx="24" cy="4" r="1.3" fill="#BFEFFF" opacity="0.7"/><circle cx="132" cy="7" r="1.8" fill="#BFEFFF" opacity="0.85"/>'
@@ -1510,6 +1513,7 @@
       + '<g><rect x="125" y="26" width="14" height="12" fill="#E53935"/><rect x="125" y="30" width="14" height="3" fill="#FFEB3B"/><rect x="130" y="26" width="3" height="12" fill="#FFEB3B"/></g>'
       + '</svg></span>'
       + '<input type="text" class="cr-search-input" id="cr-search" placeholder="환자 이름/번호 검색" value="'+esc(searchQuery)+'"/>'
+      + '</div>'
       + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-open-list">📋 전체 명단</button>'
       + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-undo">↩️ 실행취소</button>'
       + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-reset-day">🗓️ 오늘 마감</button>'
