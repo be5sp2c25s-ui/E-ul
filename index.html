@@ -54,7 +54,7 @@
   .cr-title small { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; letter-spacing:0.2px;}
   .cr-topbtns { display:flex; gap:8px; }
 
-  .cr-btn { border:none; cursor:pointer; font-weight:700; font-size:12.5px; padding:9px 13px; border-radius:9px; transition:transform .08s ease, opacity .15s ease; }
+  .cr-btn {border:none;cursor:pointer;font-weight: 500;font-size:12.5px;padding:9px 13px;border-radius:9px;transition:transform .08s ease, opacity .15s ease;}
   .cr-btn:active { transform: scale(0.96); }
   .cr-btn-primary { background:var(--accent); color:#fff; }
   .cr-btn-ghost { background:var(--panel); color:var(--ink); border:1px solid var(--line); }
@@ -130,21 +130,21 @@
   .cr-card.st-anomaly { border-left-color: var(--anomaly); background: var(--anomaly-bg); }
   .cr-card-top { display:flex; justify-content:space-between; align-items:baseline; gap:6px; }
   .cr-card-name {
-    font-weight:600;
+    font-weight: 500;
     font-size:13px;
     display:inline-flex;
     align-items:center;
   }
   .cr-status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex:none; margin-right:5px; box-shadow: 0 0 0 2px rgba(255,255,255,0.5); }
   .cr-card-no { font-size:10.5px; color:var(--muted); }
-  .cr-card-status { font-size:10px; font-weight:700; margin-top:3px; }
+  .cr-card-status { font-size:10px; font-weight:400; margin-top:3px; }
   .cr-card-status.consult { color:var(--consult); }
   .cr-card-status.waiting { color:var(--muted); }
   .cr-card-status.done { color:var(--done); }
   .cr-card-status.discharge { color:var(--discharge-ink); }
   .cr-card-status.anomaly { color:var(--anomaly); }
   .cr-card-chips { display:flex; gap:4px; flex-wrap:wrap; margin-top:6px; }
-  .cr-chip { font-size:9.5px; font-weight:700; padding:2px 6px; border-radius:5px; border:1px solid var(--line); color:var(--muted); }
+  .cr-chip { font-size:9.5px; font-weight:400; padding:2px 6px; border-radius:5px; border:1px solid var(--line); color:var(--muted); }
   .cr-chip.done { background:var(--done-bg); color:var(--done); border-color:transparent; }
   .cr-chip.cur { background:#fff; color:var(--wait-ink); border-color:var(--wait-ink); }
   .cr-chip.cur.consult { background:var(--consult); color:#fff; border-color:var(--consult); }
@@ -153,10 +153,10 @@
 
   .cr-us-row { display:flex; align-items:center; gap:8px; padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-size:12.5px; cursor:pointer; background:#fff; }
   .cr-us-row.due { border-color:var(--anomaly); background:var(--anomaly-bg); }
-  .cr-us-time { font-weight:800; font-family:"SFMono-Regular",Consolas,monospace; min-width:46px; color:var(--muted); }
+  .cr-us-time { font-weight:400; font-family:"SFMono-Regular",Consolas,monospace; min-width:46px; color:var(--muted); }
   .cr-us-row.due .cr-us-time { color:var(--anomaly); }
-  .cr-us-name { flex:1; font-weight:700; }
-  .cr-us-badge { font-size:10px; font-weight:800; color:var(--anomaly); background:#fff; padding:2px 6px; border-radius:5px; }
+  .cr-us-name { flex:1; font-weight:400; }
+  .cr-us-badge { font-size:10px; font-weight:400; color:var(--anomaly); background:#fff; padding:2px 6px; border-radius:5px; }
   .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; }
   .cr-easter { position:fixed; right:10px; bottom:8px; font-size:11px; color:var(--line); opacity:0.55; cursor:default; user-select:none; z-index:5; transition:opacity .2s ease, color .2s ease; }
 
@@ -471,7 +471,7 @@
     -webkit-backdrop-filter: blur(3px);
   }
   .theme-matrix .cr-btn-primary { color:#000; }
-  .theme-matrix .cr-btn { font-family: 'Nanum Myeongjo', serif !important; }
+  .theme-matrix .cr-btn {font-family: 'Pretendard', serif !important;}
   .theme-matrix input, .theme-matrix select, .theme-matrix textarea {
     font-family: 'Nanum Myeongjo', serif !important;
   }
@@ -607,9 +607,9 @@
 <button id="cr-anim-toggle" class="cr-anim-toggle" title="움직이는 효과 켜기/끄기">⏸</button>
 <button id="cr-anim-remove" class="cr-anim-toggle cr-anim-remove" title="효과 완전히 없애기/되살리기">🗑️</button>
 
-<button id="cr-chat-toggle" class="cr-chat-toggle" title="PC통신 채팅">💬</button>
+<button id="cr-chat-toggle" class="cr-chat-toggle" title="채팅">💬</button>
 <div id="cr-chat" class="cr-chat">
-  <div class="cr-chat-head">📟 PC통신 채팅<span style="display:flex;gap:4px;"><button id="cr-chat-clear" title="전체 삭제">🗑</button><button id="cr-chat-close">_</button></span></div>
+  <div class="cr-chat-head">📟 채팅<span style="display:flex;gap:4px;"><button id="cr-chat-clear" title="전체 삭제">🗑</button><button id="cr-chat-close">_</button></span></div>
   <div id="cr-chat-messages" class="cr-chat-messages"></div>
   <div class="cr-chat-input-row">
     <input id="cr-chat-name" placeholder="닉네임" maxlength="12"/>
