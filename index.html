@@ -151,7 +151,8 @@
   .cr-chat-input-row button { border:2px outset #E0E0E0; background:#C0C0C0; font-weight:700; font-size:12px; cursor:pointer; padding:0 8px; }
 
   /* 해킹 미니게임 */
-  .cr-hack-btn { position:fixed; right:12px; top:12px; z-index:8; width:26px; height:26px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); background:rgba(0,0,0,0.12); color:inherit; font-weight:800; font-size:13px; cursor:pointer; opacity:0.5; transition:opacity .2s ease; }
+  .cr-hack-btn { display:none; position:fixed; right:12px; top:12px; z-index:8; width:26px; height:26px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); background:rgba(0,0,0,0.12); color:inherit; font-weight:800; font-size:13px; cursor:pointer; opacity:0.5; transition:opacity .2s ease; }
+  body.theme-matrix .cr-hack-btn { display:block; }
   .cr-hack-btn:hover { opacity:1; }
   .cr-hack-overlay { display:none; position:fixed; inset:0; z-index:30; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; }
   .cr-hack-overlay.show { display:flex; }
@@ -166,6 +167,16 @@
   .cr-hack-actions { display:flex; gap:8px; }
   .cr-hack-actions button { flex:1; border:1px solid #1FD65F; background:transparent; color:#33FF66; padding:7px 0; font-family:inherit; font-weight:700; font-size:12px; cursor:pointer; border-radius:2px; }
   .cr-hack-actions button:hover { background:rgba(31,214,95,0.15); }
+  .cr-hack-success-box { text-align:center; }
+  .cr-hack-success-title { font-size:16px; font-weight:700; color:#33FF66; margin-bottom:10px; animation:cr-hack-flicker 1.4s infinite; }
+  .cr-hack-success-text { font-size:12px; line-height:1.7; color:#7CFFB2; margin-bottom:14px; white-space:pre-line; }
+  .cr-hack-success-close { width:100%; border:1px solid #1FD65F; background:transparent; color:#33FF66; padding:7px 0; font-family:inherit; font-weight:700; font-size:12px; cursor:pointer; border-radius:2px; }
+  .cr-hack-success-close:hover { background:rgba(31,214,95,0.15); }
+  @keyframes cr-hack-flicker {
+    0%, 100% { opacity:1; text-shadow:0 0 8px rgba(51,255,102,0.8); }
+    50% { opacity:0.75; text-shadow:0 0 3px rgba(51,255,102,0.4); }
+    52% { opacity:1; }
+  }
   .cr-easter:hover { opacity:1; color:var(--muted); }
   .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; position:relative; z-index:1; }
   .cr-mini-panel h4 { margin:0 0 8px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px; }
@@ -535,6 +546,16 @@
       <button id="cr-hack-cancel">CLOSE</button>
       <button id="cr-hack-submit">LOGIN</button>
     </div>
+  </div>
+</div>
+
+<div id="cr-hack-success" class="cr-hack-overlay">
+  <div class="cr-hack-box cr-hack-success-box">
+    <div class="cr-hack-success-title">✅ ACCESS GRANTED</div>
+    <div class="cr-hack-success-text">해킹에 성공했습니다.
+시스템 권한을 획득했습니다...
+(사실 그냥 숨겨진 이스터에그예요 🙂)</div>
+    <button id="cr-hack-success-close" class="cr-hack-success-close">CLOSE</button>
   </div>
 </div>
 
@@ -1940,11 +1961,15 @@
     }
     if (overlay) overlay.classList.toggle('show', show);
   }
+  function toggleHackSuccess(show){
+    const overlay = document.getElementById('cr-hack-success');
+    if (overlay) overlay.classList.toggle('show', show);
+  }
   function submitHack(){
     const pw = (document.getElementById('cr-hack-pw').value || '').trim();
     if (pw === '1972'){
       toggleHackModal(false);
-      setTimeout(() => alert('🎉 해킹에 성공했습니다!\n(사실 그냥 숨겨진 이스터에그예요 🙂)'), 150);
+      setTimeout(() => toggleHackSuccess(true), 150);
     } else {
       const err = document.getElementById('cr-hack-error');
       if (err) err.classList.add('show');
@@ -1955,11 +1980,15 @@
   const hackSubmitBtn = document.getElementById('cr-hack-submit');
   const hackPwInput = document.getElementById('cr-hack-pw');
   const hackOverlay = document.getElementById('cr-hack-modal');
+  const hackSuccessOverlay = document.getElementById('cr-hack-success');
+  const hackSuccessCloseBtn = document.getElementById('cr-hack-success-close');
   if (hackBtn) hackBtn.onclick = () => toggleHackModal(true);
   if (hackCancelBtn) hackCancelBtn.onclick = () => toggleHackModal(false);
   if (hackSubmitBtn) hackSubmitBtn.onclick = submitHack;
   if (hackPwInput) hackPwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitHack(); });
   if (hackOverlay) hackOverlay.addEventListener('click', (e) => { if (e.target === hackOverlay) toggleHackModal(false); });
+  if (hackSuccessCloseBtn) hackSuccessCloseBtn.onclick = () => toggleHackSuccess(false);
+  if (hackSuccessOverlay) hackSuccessOverlay.addEventListener('click', (e) => { if (e.target === hackSuccessOverlay) toggleHackSuccess(false); });
 
   console.log('%c🌿 이울 중앙안내 환자 시트', 'font-size:14px;font-weight:bold;');
   console.log('%c만든 사람: 이울 59기 김재서 — 그냥 여기 숨겨봤어요', 'color:#7C8798;');
