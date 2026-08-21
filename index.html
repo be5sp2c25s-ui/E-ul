@@ -8,7 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Silkscreen&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css">
 <style>
   @font-face {
@@ -149,6 +149,23 @@
   #cr-chat-name { width:52px; flex:none; }
   #cr-chat-text { flex:1; min-width:0; }
   .cr-chat-input-row button { border:2px outset #E0E0E0; background:#C0C0C0; font-weight:700; font-size:12px; cursor:pointer; padding:0 8px; }
+
+  /* 해킹 미니게임 */
+  .cr-hack-btn { position:fixed; right:12px; top:12px; z-index:8; width:26px; height:26px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); background:rgba(0,0,0,0.12); color:inherit; font-weight:800; font-size:13px; cursor:pointer; opacity:0.5; transition:opacity .2s ease; }
+  .cr-hack-btn:hover { opacity:1; }
+  .cr-hack-overlay { display:none; position:fixed; inset:0; z-index:30; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; }
+  .cr-hack-overlay.show { display:flex; }
+  .cr-hack-box { width:260px; background:#0A0F0A; border:1px solid #1FD65F; border-radius:6px; padding:16px; font-family:'Share Tech Mono','Courier New',monospace; color:#33FF66; box-shadow:0 0 24px rgba(31,214,95,0.35); }
+  .cr-hack-title { font-weight:700; font-size:14px; margin-bottom:12px; letter-spacing:0.5px; }
+  .cr-hack-field { margin-bottom:9px; }
+  .cr-hack-field label { display:block; font-size:10.5px; color:#7CFFB2; margin-bottom:3px; letter-spacing:0.5px; }
+  .cr-hack-field input { width:100%; background:#000; border:1px solid #1FD65F; color:#33FF66; padding:6px 8px; font-family:inherit; font-size:13px; border-radius:2px; }
+  .cr-hack-hint { font-size:10.5px; color:#7CFFB2; opacity:0.8; margin-bottom:8px; }
+  .cr-hack-error { display:none; font-size:11px; color:#FF5C6A; margin-bottom:8px; }
+  .cr-hack-error.show { display:block; }
+  .cr-hack-actions { display:flex; gap:8px; }
+  .cr-hack-actions button { flex:1; border:1px solid #1FD65F; background:transparent; color:#33FF66; padding:7px 0; font-family:inherit; font-weight:700; font-size:12px; cursor:pointer; border-radius:2px; }
+  .cr-hack-actions button:hover { background:rgba(31,214,95,0.15); }
   .cr-easter:hover { opacity:1; color:var(--muted); }
   .cr-mini-panel { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 12px; position:relative; z-index:1; }
   .cr-mini-panel h4 { margin:0 0 8px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:6px; }
@@ -257,7 +274,7 @@
     --bg: rgba(0,8,0,0.55); --panel: rgba(0,14,0,0.68);
     --ink:#00FF41; --muted:#00B32C; --line: rgba(0,255,65,0.3);
     --accent:#00FF41; --accent-dim: rgba(0,255,65,0.15);
-    font-family: 'Silkscreen', 'Share Tech Mono', monospace;
+    font-family: 'DungGeunMo', 'Share Tech Mono', monospace;
   }
   .cr-root.theme-jackpot, .cr-overlay.theme-jackpot {
     --bg:#1A1024; --panel:#241633; --ink:#F5E6C8; --muted:#B39A6B; --line:#3A2A50;
@@ -360,11 +377,11 @@
     -webkit-backdrop-filter: blur(3px);
   }
   .theme-matrix .cr-btn-primary { color:#000; }
-  .theme-matrix .cr-btn { font-family: 'Silkscreen', 'Share Tech Mono', monospace !important; }
+  .theme-matrix .cr-btn { font-family: 'DungGeunMo', 'Share Tech Mono', monospace !important; }
   .theme-matrix input, .theme-matrix select, .theme-matrix textarea {
-    font-family: 'Silkscreen', 'Share Tech Mono', monospace !important;
+    font-family: 'DungGeunMo', 'Share Tech Mono', monospace !important;
   }
-  .theme-matrix .cr-mono, .theme-matrix .cr-us-time { font-family: 'Silkscreen', 'Share Tech Mono', monospace !important; letter-spacing: 0 !important; }
+  .theme-matrix .cr-mono, .theme-matrix .cr-us-time { font-family: 'DungGeunMo', 'Share Tech Mono', monospace !important; letter-spacing: 0 !important; }
   .theme-manuscript .cr-mono, .theme-manuscript .cr-us-time { font-family: 'Nanum Myeongjo', serif !important; letter-spacing: 0 !important; }
   .theme-matrix .cr-card-name {
     text-shadow: 0 0 5px color-mix(in srgb, var(--accent) 60%, transparent);
@@ -503,6 +520,21 @@
     <input id="cr-chat-name" placeholder="닉네임" maxlength="12"/>
     <input id="cr-chat-text" placeholder="메시지 입력..." maxlength="200"/>
     <button id="cr-chat-send">전송</button>
+  </div>
+</div>
+
+<button id="cr-hack-btn" class="cr-hack-btn" title="???">?</button>
+<div id="cr-hack-modal" class="cr-hack-overlay">
+  <div class="cr-hack-box">
+    <div class="cr-hack-title">🔐 ACCESS TERMINAL</div>
+    <div class="cr-hack-field"><label>ID</label><input id="cr-hack-id" type="text" autocomplete="off"/></div>
+    <div class="cr-hack-field"><label>PASSWORD</label><input id="cr-hack-pw" type="password" autocomplete="off"/></div>
+    <div class="cr-hack-hint">HINT: 이울 창립연도</div>
+    <div id="cr-hack-error" class="cr-hack-error">⛔ ACCESS DENIED</div>
+    <div class="cr-hack-actions">
+      <button id="cr-hack-cancel">CLOSE</button>
+      <button id="cr-hack-submit">LOGIN</button>
+    </div>
   </div>
 </div>
 
@@ -1894,6 +1926,40 @@
       renderChatPanel();
     });
   }
+
+  // ---------- 해킹 미니게임 이스터에그 ----------
+  function toggleHackModal(show){
+    const overlay = document.getElementById('cr-hack-modal');
+    const err = document.getElementById('cr-hack-error');
+    if (err) err.classList.remove('show');
+    if (show){
+      const idEl = document.getElementById('cr-hack-id');
+      const pwEl = document.getElementById('cr-hack-pw');
+      if (idEl) idEl.value = '';
+      if (pwEl) pwEl.value = '';
+    }
+    if (overlay) overlay.classList.toggle('show', show);
+  }
+  function submitHack(){
+    const pw = (document.getElementById('cr-hack-pw').value || '').trim();
+    if (pw === '1972'){
+      toggleHackModal(false);
+      setTimeout(() => alert('🎉 해킹에 성공했습니다!\n(사실 그냥 숨겨진 이스터에그예요 🙂)'), 150);
+    } else {
+      const err = document.getElementById('cr-hack-error');
+      if (err) err.classList.add('show');
+    }
+  }
+  const hackBtn = document.getElementById('cr-hack-btn');
+  const hackCancelBtn = document.getElementById('cr-hack-cancel');
+  const hackSubmitBtn = document.getElementById('cr-hack-submit');
+  const hackPwInput = document.getElementById('cr-hack-pw');
+  const hackOverlay = document.getElementById('cr-hack-modal');
+  if (hackBtn) hackBtn.onclick = () => toggleHackModal(true);
+  if (hackCancelBtn) hackCancelBtn.onclick = () => toggleHackModal(false);
+  if (hackSubmitBtn) hackSubmitBtn.onclick = submitHack;
+  if (hackPwInput) hackPwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitHack(); });
+  if (hackOverlay) hackOverlay.addEventListener('click', (e) => { if (e.target === hackOverlay) toggleHackModal(false); });
 
   console.log('%c🌿 이울 중앙안내 환자 시트', 'font-size:14px;font-weight:bold;');
   console.log('%c만든 사람: 이울 59기 김재서 — 그냥 여기 숨겨봤어요', 'color:#7C8798;');
