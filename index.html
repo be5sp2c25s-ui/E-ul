@@ -151,16 +151,16 @@
   .cr-chat-input-row button { border:2px outset #E0E0E0; background:#C0C0C0; font-weight:700; font-size:12px; cursor:pointer; padding:0 8px; }
 
   /* 해킹 미니게임 */
-  .cr-hack-btn { display:none; position:fixed; right:12px; top:12px; z-index:8; width:26px; height:26px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); background:rgba(0,0,0,0.12); color:inherit; font-weight:800; font-size:13px; cursor:pointer; opacity:0.5; transition:opacity .2s ease; }
+  .cr-hack-btn { display:none; position:fixed; right:14px; bottom:44px; z-index:8; width:26px; height:26px; border-radius:50%; border:1px solid rgba(0,0,0,0.15); background:rgba(0,0,0,0.12); color:inherit; font-weight:800; font-size:13px; cursor:pointer; opacity:0.5; transition:opacity .2s ease; }
   body.theme-matrix .cr-hack-btn { display:block; }
   .cr-hack-btn:hover { opacity:1; }
   .cr-hack-overlay { display:none; position:fixed; inset:0; z-index:30; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; }
   .cr-hack-overlay.show { display:flex; }
-  .cr-hack-box { width:260px; background:#0A0F0A; border:1px solid #1FD65F; border-radius:6px; padding:16px; font-family:'Share Tech Mono','Courier New',monospace; color:#33FF66; box-shadow:0 0 24px rgba(31,214,95,0.35); }
+  .cr-hack-box { width:260px; box-sizing:border-box; background:#0A0F0A; border:1px solid #1FD65F; border-radius:6px; padding:16px; font-family:'DungGeunMo','Courier New',monospace; color:#33FF66; box-shadow:0 0 24px rgba(31,214,95,0.35); }
   .cr-hack-title { font-weight:700; font-size:14px; margin-bottom:12px; letter-spacing:0.5px; }
   .cr-hack-field { margin-bottom:9px; }
   .cr-hack-field label { display:block; font-size:10.5px; color:#7CFFB2; margin-bottom:3px; letter-spacing:0.5px; }
-  .cr-hack-field input { width:100%; background:#000; border:1px solid #1FD65F; color:#33FF66; padding:6px 8px; font-family:inherit; font-size:13px; border-radius:2px; }
+  .cr-hack-field input { width:100%; box-sizing:border-box; background:#000; border:1px solid #1FD65F; color:#33FF66; padding:7px 9px; font-family:inherit; font-size:14px; border-radius:2px; }
   .cr-hack-hint { font-size:10.5px; color:#7CFFB2; opacity:0.8; margin-bottom:8px; }
   .cr-hack-error { display:none; font-size:11px; color:#FF5C6A; margin-bottom:8px; }
   .cr-hack-error.show { display:block; }
@@ -553,8 +553,7 @@
   <div class="cr-hack-box cr-hack-success-box">
     <div class="cr-hack-success-title">✅ ACCESS GRANTED</div>
     <div class="cr-hack-success-text">해킹에 성공했습니다.
-시스템 권한을 획득했습니다...
-(사실 그냥 숨겨진 이스터에그예요 🙂)</div>
+시스템 권한을 획득했습니다...</div>
     <button id="cr-hack-success-close" class="cr-hack-success-close">CLOSE</button>
   </div>
 </div>
