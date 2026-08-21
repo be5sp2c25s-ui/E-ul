@@ -431,7 +431,7 @@
   }
 
   /* 222 발렌타인: 떨어지는 하트 */
-  #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  #cr-hearts { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:-1; }
   #cr-hearts span { position:absolute; top:-10%; will-change:transform,opacity; }
   @keyframes cr-heart-fall {
     0%   { transform: translateY(-10vh) rotate(0deg);   opacity:0; }
@@ -452,7 +452,7 @@
   }
 
   /* 444 여름: 위로 떠오르는 기포/열대 이모지 */
-  #cr-bubbles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
+  #cr-bubbles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:-1; }
   #cr-bubbles span { position:absolute; bottom:-10%; will-change:transform,opacity; }
   #cr-bubbles span.circ {
     border-radius: 50%;
