@@ -381,7 +381,10 @@
   }
 
   /* 444: 여름 바다 — 블러 + 반투명 + 녹아드는 골드 포인트 */
-  .theme-summer.cr-root, .theme-summer.cr-overlay {
+  /* 주의: .cr-root 자체에는 backdrop-filter를 걸지 않음 — 걸면 새 스태킹 컨텍스트가 생겨서
+     동적으로 body에 붙는 #cr-bubbles가 카드보다 앞으로 튀어나오는 버그가 생김.
+     대신 모달 오버레이에만 블러를 남김(오버레이는 z-index가 이미 최상단이라 문제 없음) */
+  .theme-summer.cr-overlay {
     backdrop-filter: blur(8px) saturate(160%);
     -webkit-backdrop-filter: blur(8px) saturate(160%);
   }
@@ -412,7 +415,8 @@
   .theme-summer .cr-title { text-shadow: 0 0 10px rgba(255,255,255,0.6); }
 
   /* 333: 겨울 — 서리 낀 반투명 유리 카드 + 얼음빛 프로스트 글로우 */
-  .theme-winter.cr-root, .theme-winter.cr-overlay {
+  /* 444와 같은 이유로 .cr-root 자체 블러는 뺌 (모달 오버레이만 유지) */
+  .theme-winter.cr-overlay {
     backdrop-filter: blur(10px) saturate(120%);
     -webkit-backdrop-filter: blur(10px) saturate(120%);
   }
