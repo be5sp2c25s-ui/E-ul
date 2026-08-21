@@ -49,7 +49,7 @@
   .cr-mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; letter-spacing: 0.3px; }
 
   .cr-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; position:relative; z-index:1; }
-  body.theme-summer .cr-topbar, body.theme-winter .cr-topbar { margin-bottom: 50px !important; }
+  body.theme-summer .cr-topbar { margin-bottom: 50px !important; }
   .cr-title { font-size:18px; font-weight:800; letter-spacing:-0.3px; }
   .cr-title small { display:block; font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; letter-spacing:0.2px;}
   .cr-topbtns { display:flex; gap:8px; }
@@ -63,9 +63,8 @@
   .cr-btn:disabled { opacity:.4; cursor:not-allowed; }
 
   .cr-toolrow { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; position:relative; z-index:1; }
-  .cr-deco { display:none; position:absolute; right:4px; bottom:100%; margin-bottom:6px; height:52px; width:auto; pointer-events:none; }
+  .cr-deco { display:none; position:absolute; right:4px; bottom:100%; margin-bottom:0px; height:52px; width:auto; pointer-events:none; }
   body.theme-summer .cr-deco-summer { display:block; }
-  body.theme-winter .cr-deco-winter { display:block; }
   .cr-search-wrap { position:relative; flex:1; min-width:160px; }
   .cr-search-wrap .cr-search-input { width:100%; }
   .cr-search-input { flex:1; min-width:160px; padding:9px 12px; border-radius:9px; border:1px solid var(--line); font-size:13px; font-family:inherit; background:#fff; color:var(--ink); }
@@ -1498,7 +1497,6 @@
       + '<div class="cr-toolrow">'
       + '<div class="cr-search-wrap">'
       + '<img class="cr-deco cr-deco-summer" src="./images/summer-banner.png" alt=""/>'
-      + '<img class="cr-deco cr-deco-winter" src="./images/winter-banner.png" alt=""/>'
       + '<input type="text" class="cr-search-input" id="cr-search" placeholder="환자 이름/번호 검색" value="'+esc(searchQuery)+'"/>'
       + '</div>'
       + '<button class="cr-btn cr-btn-ghost cr-btn-sm" id="cr-open-list">📋 전체 명단</button>'
