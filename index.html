@@ -309,6 +309,17 @@
 
     /* 777: 아트데코 · 심야 카툰 — 자정의 도시, 단색 스포트라이트와 보름달 */
   body.theme-deco { background: linear-gradient(to bottom, #05081A 0%, #2C3A73 100%); }
+  /* 빈티지 필름 그레인 — 화면 전체에 아주 은은하게 */
+  body.theme-deco::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.045;
+    mix-blend-mode: overlay;
+  }
   .cr-root.theme-deco, .cr-overlay.theme-deco {
     /* --bg: linear-gradient(to bottom, #0c0855, #21119d); */
     
@@ -1284,9 +1295,9 @@
 <button id="cr-anim-toggle" class="cr-anim-toggle" title="움직이는 효과 켜기/끄기">⏸</button>
 <button id="cr-anim-remove" class="cr-anim-toggle cr-anim-remove" title="효과 완전히 없애기/되살리기">🗑️</button>
 
-<button id="cr-chat-toggle" class="cr-chat-toggle" title="채팅">💬</button>
+<button id="cr-chat-toggle" class="cr-chat-toggle" title="PC통신 채팅">💬</button>
 <div id="cr-chat" class="cr-chat">
-  <div class="cr-chat-head">📟 채팅<span style="display:flex;gap:4px;"><button id="cr-chat-clear" title="전체 삭제">🗑</button><button id="cr-chat-close">_</button></span></div>
+  <div class="cr-chat-head">📟 PC통신 채팅<span style="display:flex;gap:4px;"><button id="cr-chat-clear" title="전체 삭제">🗑</button><button id="cr-chat-close">_</button></span></div>
   <div id="cr-chat-messages" class="cr-chat-messages"></div>
   <div class="cr-chat-input-row">
     <input id="cr-chat-name" placeholder="닉네임" maxlength="12"/>
