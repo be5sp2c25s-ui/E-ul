@@ -723,7 +723,7 @@
     font-family: 'Cinzel','Pretendard',serif;
     letter-spacing: 0.3;
     font-size:10px;
-    font-weight: 600;
+    font-weight: 300;
     color: #e0d6c6;
     margin-top:7px;
   }
@@ -751,7 +751,7 @@
   }
   .theme-deco .cr-dept-group-title::before {content:'';width:9px;height:9px;background: #e3ad6a;transform: rotate(
 45deg);flex:none;}
-  .theme-deco .cr-dept-group-title::after { content:''; flex:1; height:3px; background:#2A2F58; }
+  .theme-deco .cr-dept-group-title::after { content:''; flex:1; height:0px; background:#2A2F58; }
 
   /* 패널: 단색 면 + 경계가 뚜렷한 오프셋 그림자만으로 분리 */
   .theme-deco .cr-col, .theme-deco .cr-mini-panel {
@@ -796,7 +796,7 @@
   .theme-deco .cr-card.st-discharge {background: #191919 !important;border-left-color:var(--discharge-ink) !important; filter:grayscale(1) !important;}
   .theme-deco .cr-mini-panel { border-radius: 14px !important; }
   .theme-deco .cr-card.st-anomaly   { background:#3A1A2E !important; border-left-color:var(--anomaly) !important; }
-  .theme-deco .cr-card-name {font-size:13.5px;font-weight: 700;letter-spacing:0.4px;color:#F0DFAE;}
+  .theme-deco .cr-card-name {font-size:13.5px;font-weight: 550;letter-spacing:0.4px;color:#F0DFAE;}
   .theme-deco .cr-status-dot { width:7px; height:7px; transform:rotate(45deg); box-shadow:none; margin-right:7px; }
   .theme-deco .cr-card-no, .theme-deco .cr-mono, .theme-deco .cr-us-time {
     font-family: 'Cinzel','Pretendard',serif !important;
@@ -807,9 +807,9 @@
     font-size:9px; letter-spacing:1.2px; padding:4px 8px;
     border:none; color:#C9A667; background:#0A0E28;
   }
-  .theme-deco .cr-chip.done { background:#D9A94A !important; color:#0A0E28; }
-  .theme-deco .cr-chip.cur:not(.consult) {background: #B8863A !important;color: #f1f1f1;}
-  .theme-deco .cr-chip.cur.consult { background:var(--consult) !important; color:#fff; }
+  .theme-deco .cr-chip.done { background:#D9A94A !important; color:#0A0E28; font-weight: 100; }
+  .theme-deco .cr-chip.cur:not(.consult) {background: #B8863A !important;color: #f1f1f1; font-weight: 100; }
+  .theme-deco .cr-chip.cur.consult { background:var(--consult) !important; color:#fff; font-weight: 100; }
 
   /* 버튼: 단색 면 + 오프셋 그림자, 호버시 색 반전 */
   .theme-deco .cr-btn {
@@ -858,6 +858,8 @@
     background: #C9A667;
     padding:12px 16px;
     margin:0 0 14px;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
     border-bottom:none;
   }
   .theme-deco .cr-mini-list, .theme-deco .cr-mini-panel .cr-empty-note { margin:0 16px; }
