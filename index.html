@@ -289,7 +289,7 @@
     -webkit-font-smoothing: none;
     font-smooth: never;
   }
-  /* 444: 여름 바다 — 터키석빛 그라데이션 + 녹아드는 골드 포인트 + 반투명 유리 카드 */
+  .theme-summer .cr-btn-soft { background: rgba(255,255,255,0.85); color:#0A4A52; }
   .cr-root.theme-summer, .cr-overlay.theme-summer {
     --bg: rgba(255,255,255,0.35); --panel: rgba(255,255,255,0.62);
     --ink:#0A4A52; --muted:#3F8A93; --line: rgba(255,255,255,0.6);
@@ -472,7 +472,12 @@
   color: #c6c6c6 !important;
   border-color: #a6a6a6 !important;
 }
-.theme-deco .cr-card .cr-card-no.cr-mono {
+.theme-deco .cr-card .cr-card-no.cr-mono,
+.theme-deco .cr-modal .cr-card-no.cr-mono {
+  color: #F0DFAE !important;
+}
+.theme-deco #cr-confirm-reset {
+  background: #8B2E2E !important;
   color: #F0DFAE !important;
 }
   /* 777 테마의 모든 요소에 폰트 적용 */
@@ -876,7 +881,7 @@
     padding:12px 13px;
   }
   .theme-deco .cr-col-head::before {content:'';width:8px;height:8px;background: #dda968;transform:rotate(45deg);flex:none;}
-  .theme-deco .cr-col-name {font-family: 'Pretendard';letter-spacing:1.6px;font-size:13px;color: #dbc17e;font-weight:700;}
+  .theme-deco .cr-col-name {font-family: 'Pretendard';letter-spacing:1.6px;font-size:13px;color: #dbc17e;font-weight:600;}
   .theme-deco .cr-col-count {
     font-family: 'Cinzel','Pretendard',serif;
     letter-spacing:1px;
@@ -904,8 +909,9 @@
   .theme-deco .cr-card:hover { transform:translate(-2px,-2px); background:#243066 !important; }
   .theme-deco .cr-card.st-consult   { background:#17306B !important; border-left-color:var(--consult) !important; }
   .theme-deco .cr-card.st-done      {background:#3A2C0E !important;border-left-color: #ba943d !important;}
-  .theme-deco .cr-card.st-discharge {background: #191919 !important;border-left-color:var(--discharge-ink) !important; .cr-card.st-anomaly   { background:#3A1A2E !important; border-left-color:var(--anomaly) !important; }
-  .theme-deco .cr-card-name {font-size:13.5px;font-weight: 500;letter-spacing:0.4px;color:#F0DFAE;}
+  .theme-deco .cr-card.st-discharge {background: #191919 !important;border-left-color:var(--discharge-ink) !important;}
+  .theme-deco .cr-card.st-anomaly   { background:#3A1A2E !important; border-left-color:var(--anomaly) !important; }
+  .theme-deco .cr-card-name {font-size:13.5px;font-weight: 450;letter-spacing:0.4px;color:#F0DFAE;}
   .theme-deco .cr-status-dot { width:7px; height:7px; transform:rotate(45deg); box-shadow:none; margin-right:7px; }
   .theme-deco .cr-card-no, .theme-deco .cr-mono, .theme-deco .cr-us-time {
     font-family: 'Cinzel','Pretendard',serif !important;
@@ -924,7 +930,7 @@
   .theme-deco .cr-btn {
     font-family: 'Cinzel','Pretendard',serif;
     letter-spacing: 0.3;
-    font-weight:700;
+    font-weight:600;
     font-size:11.5px;
     padding:11px 16px;
     border:none;
@@ -1021,8 +1027,8 @@
   .theme-deco .cr-detail-row { border-bottom:3px solid #0A0E28; padding:12px 0; }
   .theme-deco .cr-dept-name { letter-spacing:0.5px; }
   .theme-deco .cr-dept-tag { font-family:'Cinzel','Pretendard',serif; letter-spacing:1.2px; font-size:9px; font-weight:700; padding:4px 9px; border:none; }
-  .theme-deco .cr-dept-tag.pending { background:#2A2F58; color:#8A7248; }
-  .theme-deco .cr-dept-tag.current-w { background:#aeb0f0 !important; border:none; color:#0A0E28; }
+  .theme-deco .cr-dept-tag.pending { background:#2A2F58; color:#C9A667; }
+  .theme-deco .cr-dept-tag.current-w { background:#17306B !important; border:none; color:#F0DFAE; }
   .theme-deco .cr-dept-tag.done { background:#D9A94A; color:#0A0E28; }
   .theme-deco .cr-room-list-item { background:#0A0E28; border:none; padding:9px 13px; font-weight:400; letter-spacing:0.5px; }
   .theme-deco .cr-room-list-dept { font-family:'Cinzel','Pretendard',serif; letter-spacing:2px; font-size:9.5px; color:#B8863A; }
@@ -1298,9 +1304,9 @@
 <button id="cr-anim-toggle" class="cr-anim-toggle" title="움직이는 효과 켜기/끄기">⏸</button>
 <button id="cr-anim-remove" class="cr-anim-toggle cr-anim-remove" title="효과 완전히 없애기/되살리기">🗑️</button>
 
-<button id="cr-chat-toggle" class="cr-chat-toggle" title="PC통신 채팅">💬</button>
+<button id="cr-chat-toggle" class="cr-chat-toggle" title="채팅">💬</button>
 <div id="cr-chat" class="cr-chat">
-  <div class="cr-chat-head">📟 PC통신 채팅<span style="display:flex;gap:4px;"><button id="cr-chat-clear" title="전체 삭제">🗑</button><button id="cr-chat-close">_</button></span></div>
+  <div class="cr-chat-head">📟 채팅<span style="display:flex;gap:4px;"><button id="cr-chat-clear" title="전체 삭제">🗑</button><button id="cr-chat-close">_</button></span></div>
   <div id="cr-chat-messages" class="cr-chat-messages"></div>
   <div class="cr-chat-input-row">
     <input id="cr-chat-name" placeholder="닉네임" maxlength="12"/>
