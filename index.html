@@ -317,7 +317,7 @@
     z-index: 100;
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.045;
+    opacity: 0.13;
     mix-blend-mode: overlay;
   }
   .cr-root.theme-deco, .cr-overlay.theme-deco {
@@ -471,6 +471,9 @@
 .theme-deco .cr-card-no.cr-mono {
   color: #c6c6c6 !important;
   border-color: #a6a6a6 !important;
+}
+.theme-deco .cr-card .cr-card-no.cr-mono {
+  color: #F0DFAE !important;
 }
   /* 777 테마의 모든 요소에 폰트 적용 */
 .theme-deco, 
@@ -908,7 +911,7 @@
     font-family: 'Cinzel','Pretendard',serif !important;
     letter-spacing:1.2px !important;
   }
-  .theme-deco .cr-card-status { font-size:9.5px; letter-spacing:1.6px; margin-top:6px; }
+  .theme-deco .cr-card-status { font-size:9.5px; letter-spacing:1.6px; margin-top:6px; color:#F0DFAE !important; }
   .theme-deco .cr-chip {
     font-size:9px; letter-spacing:1.2px; padding:4px 8px;
     border:none; color:#C9A667; background:#0A0E28;
