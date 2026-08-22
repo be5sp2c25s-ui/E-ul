@@ -671,9 +671,21 @@
   }
   /* 달: 그러데이션 없는 진짜 단색 원 */
   .cr-deco-moon {
-    position:absolute; right:9vw; bottom:400px; width:118px; height:118px;
+    position:absolute; left: 0px; bottom:400px; width:118px; height:118px;
     border-radius:50% !important; background-image:linear-gradient(to top right, #dcd8c1ab, #6c779300) ;
-    box-shadow: inset -20px -10px 0px rgba(0. 0. 0. 0.2);
+    box-shadow: inset -10px -10px 40px rgba(0, 0, 0, 0.2);
+    animation: moon-parabola 600s ease-in-out infinite;
+  }
+  @keyframes moon-parabola {    
+    0% {        
+        transform: translate(-118px, 300px);
+    }
+    50% {       
+         transform: translate(calc(50vw - 59px), 0);
+    }
+    100% {
+      transform: translate(100vw, 300px);
+    }
   }
   @keyframes cr-deco-swing {
     0%   { transform: translateX(-50%) rotate(-17deg); }
