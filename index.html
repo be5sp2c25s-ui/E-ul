@@ -164,9 +164,9 @@
   #cr-hearts span, #cr-bubbles span { pointer-events: auto; cursor: pointer; }
 
   /* 555: PC통신 스타일 실시간 채팅 */
-  .cr-chat-toggle { display:none; position:fixed; right:14px; bottom:44px; z-index:6; width:40px; height:40px; border-radius:50%; border:none; background:#000080; color:#fff; font-size:17px; cursor:pointer; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+  .cr-chat-toggle { display:none; position:fixed; right:14px; bottom:44px; z-index:1001; width:40px; height:40px; border-radius:50%; border:none; background:#000080; color:#fff; font-size:17px; cursor:pointer; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
   body.theme-retro .cr-chat-toggle { display:flex; }
-  .cr-chat { display:none; flex-direction:column; position:fixed; right:14px; bottom:92px; z-index:7; width:260px; height:300px; background:#000; border:2px outset #E0E0E0; font-family:'DungGeunMo','굴림',Gulim,sans-serif; }
+  .cr-chat { display:none; flex-direction:column; position:fixed; right:14px; bottom:92px; z-index:1001; width:260px; height:300px; background:#000; border:2px outset #E0E0E0; font-family:'DungGeunMo','굴림',Gulim,sans-serif; }
   .cr-chat-head { background:#000080; color:#fff; font-weight:700; padding:4px 6px; display:flex; align-items:center; justify-content:space-between; flex:none; }
   .cr-chat-head button { width:16px; height:14px; font-size:9px; line-height:1; background:#C0C0C0; color:#000; border:1px outset #E0E0E0; cursor:pointer; }
   .cr-chat-messages { flex:1; overflow-y:auto; padding:6px; color:#33FF66; font-size:13px; line-height:1.5; }
@@ -1887,7 +1887,7 @@
     return null;
   }
 
-  function addPatient(patientNo, name, deptNames, usAptTime){
+  function addPatient(patientNo, name, deptNames, usAptTime, skipLab){
     const trimmedNo = patientNo.trim();
     if (state.patients.some(p => p.patientNo === trimmedNo)){
       alert('환자번호 "' + trimmedNo + '"는 이미 등록되어 있습니다. 번호를 확인해주세요.');
@@ -1903,7 +1903,7 @@
       currentDept: null,
       status: 'waiting',
       labReady: false,
-      skipLab: false,
+      skipLab: deptNames.includes('내과') ? !!skipLab : false,
       usAptTime: usAptTime || null,
       note: '',
       history: [],
@@ -2521,6 +2521,10 @@
       + '<div class="cr-field"><label>환자번호</label><input type="text" id="cr-np-no" placeholder="예: 0142"/></div>'
       + '<div class="cr-field"><label>이름</label><input type="text" id="cr-np-name" placeholder="예: 김재서"/></div>'
       + '<div class="cr-field"><label>필요한 부서 (여러 개 선택)</label><div class="cr-check-grid">'+pills+'</div></div>'
+      + (depts.includes('내과') ? '<div class="cr-field" id="cr-lab-requirement-field" style="display:none"><label>랩부 검사결과 (내과)</label><div class="cr-check-grid">'
+        + '<button class="cr-check-pill" data-lab-choice="needed"><span class="cr-box"></span>검사결과 필요</button>'
+        + '<button class="cr-check-pill" data-lab-choice="not-needed"><span class="cr-box"></span>검사결과 필요없음</button>'
+        + '</div></div>' : '')
       + (depts.includes('초음파') ? '<div class="cr-field" id="cr-us-time-field" style="display:none"><label>초음파 예약시간</label><input type="time" id="cr-np-us-time"/></div>' : '')
       + '<div class="cr-modal-actions"><button class="cr-btn cr-btn-ghost" id="cr-modal-close">취소</button><button class="cr-btn cr-btn-primary" id="cr-np-save">등록 완료</button></div>';
   }
@@ -2740,14 +2744,33 @@
 
     if (modal.type === 'new'){
       let selected = [];
+      let labChoice = null;
       document.querySelectorAll('[data-dept]').forEach(el=>{
         el.onclick = () => {
           const d = el.getAttribute('data-dept');
           const box = el.querySelector('.cr-box');
-          if (selected.includes(d)) { selected = selected.filter(x=>x!==d); el.classList.remove('on'); if (box) box.textContent=''; }
+          if (selected.includes(d)) {
+            selected = selected.filter(x=>x!==d);
+            el.classList.remove('on');
+            if (box) box.textContent='';
+            if (d === '내과') labChoice = null;
+          }
           else { selected.push(d); el.classList.add('on'); if (box) box.textContent='✓'; }
           const usField = document.getElementById('cr-us-time-field');
           if (usField) usField.style.display = selected.includes('초음파') ? 'block' : 'none';
+          const labField = document.getElementById('cr-lab-requirement-field');
+          if (labField) labField.style.display = selected.includes('내과') ? 'block' : 'none';
+        };
+      });
+      document.querySelectorAll('[data-lab-choice]').forEach(el=>{
+        el.onclick = () => {
+          labChoice = el.getAttribute('data-lab-choice');
+          document.querySelectorAll('[data-lab-choice]').forEach(choice=>{
+            const choiceBox = choice.querySelector('.cr-box');
+            const isSelected = choice === el;
+            choice.classList.toggle('on', isSelected);
+            if (choiceBox) choiceBox.textContent = isSelected ? '✓' : '';
+          });
         };
       });
       const save = document.getElementById('cr-np-save');
@@ -2759,7 +2782,8 @@
         if (!no.trim() || !name.trim()) { toast('환자번호와 이름을 입력해주세요'); return; }
         if (THEME_TABLE[no.trim()]) { modal = null; triggerThemeEasterEgg(no.trim()); return; }
         if (selected.length === 0) { toast('필요한 부서를 1개 이상 선택해주세요'); return; }
-        const ok = addPatient(no, name, selected, usTime);
+        if (selected.includes('내과') && !labChoice) { toast('내과의 랩부 검사결과 필요 여부를 선택해주세요'); return; }
+        const ok = addPatient(no, name, selected, usTime, labChoice === 'not-needed');
         if (ok) { modal = null; render(); }
       };
     }
