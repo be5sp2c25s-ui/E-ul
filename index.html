@@ -1268,6 +1268,41 @@
   .cr-root > .cr-bottom {
     margin-top: 22px;
   }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(126, 138, 156, 0.35) transparent;
+  }
+  .cr-dept-groups,
+  .cr-board {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(126, 138, 156, 0.35) transparent;
+  }
+  html::-webkit-scrollbar,
+  .cr-dept-groups::-webkit-scrollbar,
+  .cr-board::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  html::-webkit-scrollbar-track,
+  .cr-dept-groups::-webkit-scrollbar-track,
+  .cr-board::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  html::-webkit-scrollbar-thumb,
+  .cr-dept-groups::-webkit-scrollbar-thumb,
+  .cr-board::-webkit-scrollbar-thumb {
+    background: rgba(126, 138, 156, 0.35);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 999px;
+  }
+  html::-webkit-scrollbar-thumb:hover,
+  .cr-dept-groups::-webkit-scrollbar-thumb:hover,
+  .cr-board::-webkit-scrollbar-thumb:hover {
+    background: rgba(126, 138, 156, 0.55);
+    background-clip: padding-box;
+  }
 </style>
 
 </head>
