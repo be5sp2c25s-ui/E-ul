@@ -57,6 +57,13 @@
     min-height: 640px;
     box-sizing: border-box;
   }
+    .cr-root > * {
+      position: relative;
+      z-index: 10;
+    }
+    .theme-deco.cr-root > * {
+      z-index: 100 !important;
+    }
   .cr-root *, .cr-overlay * { box-sizing: border-box; }
   .cr-mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; letter-spacing: 0.3px; }
 
@@ -90,7 +97,7 @@
   .cr-dept-groups .cr-dept-group { flex:0 0 auto; margin-bottom:0; }
   .cr-dept-group-title { font-size:12px; font-weight:800; color:var(--muted); margin:0 0 6px 2px; text-transform:none; }
   .cr-board { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; }
-  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; position:relative; z-index:1; }
+  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; position:relative; z-index:5; }
   .cr-col-head { padding:11px 12px 9px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
   .cr-col-name { font-weight:800; font-size:13px; }
   .cr-col-count { font-size:11px; font-weight:700; color:var(--muted); background:var(--bg); border-radius:20px; padding:2px 8px; }
@@ -116,7 +123,7 @@
   .theme-matrix .cr-room-switch:not(.off) .cr-switch-thumb { box-shadow:0 0 6px var(--accent); }
   .theme-matrix .cr-room-switch.off .cr-switch-thumb { background:#333; }
 
-  .cr-card { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; position:relative; z-index:1; background:#fff; border-left:4px solid var(--wait-ink); }
+  .cr-card { border:1px solid var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; position:relative; z-index:6; background:#fff; border-left:4px solid var(--wait-ink); }
   .cr-card.st-consult { border-left-color: var(--consult); background: var(--consult-bg); }
   .cr-card.st-waiting { border-left-color: var(--wait-ink); }
   .cr-card.st-done { border-left-color: var(--done); background: var(--done-bg); }
@@ -146,14 +153,15 @@
   .cr-us-row.due .cr-us-time { color:var(--anomaly); }
   .cr-us-name { flex:1; font-weight:700; }
   .cr-us-badge { font-size:10px; font-weight:800; color:var(--anomaly); background:#fff; padding:2px 6px; border-radius:5px; }
-  .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; }
+  .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; position:relative; z-index:5; }
   .cr-easter { position:fixed; right:10px; bottom:8px; font-size:11px; color:var(--line); opacity:0.55; cursor:default; user-select:none; z-index:5; transition:opacity .2s ease, color .2s ease; }
 
   .cr-anim-toggle { display:none; position:fixed; left:10px; bottom:8px; z-index:6; border:none; background:rgba(0,0,0,0.4); color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:13px; align-items:center; justify-content:center; }
   .cr-anim-remove { left:46px; font-size:14px; }
   body.theme-pink .cr-anim-toggle, body.theme-winter .cr-anim-toggle, body.theme-summer .cr-anim-toggle, body.theme-deco .cr-anim-toggle { display:flex; }
   body.anim-paused #cr-hearts span, body.anim-paused #cr-snow span, body.anim-paused #cr-bubbles span,
-  body.anim-paused #cr-deco-stage span, body.anim-paused #cr-deco-stage .cr-deco-beam { animation-play-state: paused !important; }
+  body.anim-paused #cr-deco-stage span, body.anim-paused #cr-deco-stage .cr-deco-beam,
+  body.anim-paused #cr-deco-clouds .cr-deco-cloud { animation-play-state: paused !important; }
   #cr-hearts span, #cr-bubbles span { pointer-events: auto; cursor: pointer; }
 
   /* 555: PC통신 스타일 실시간 채팅 */
@@ -652,7 +660,7 @@
     /* ============================================================
      777 아트데코 (late night cartoon) — 무대 장치
      ============================================================ */
-  #cr-deco-stage { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  #cr-deco-stage { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:1; }
   .cr-deco-beam {
     position:absolute; top:-14vh; left:50%; width:38vw; height:150vh;
     filter: blur(100px) !important;
@@ -665,6 +673,7 @@
     clip-path:polygon(46% 0, 54% 0, 100% 100%, 0 100%);
     animation:cr-deco-swing 17s ease-in-out infinite alternate;
     transform-origin: top center !important;
+    z-index: 2;
   }
   .cr-deco-beam.b2 {
     left:52%; width:30vw; background-image:linear-gradient(to bottom, #3b1e81, #110c3c) !important;
@@ -678,6 +687,7 @@
     border-radius:50% !important; background-image:linear-gradient(to top right, #dcd8c1ab, #6c779300) ;
     box-shadow: inset -10px -10px 40px rgba(0, 0, 0, 0.2);
     animation: moon-parabola 600s ease-in-out infinite;
+    z-index: 0;
   }
   @keyframes moon-parabola {    
     0% {        
@@ -707,10 +717,68 @@
   color: rgba(15, 18, 28);
 
   pointer-events: none;
-  z-index: 1;
+  z-index: 4;
 
   animation: glider-pass 300s linear infinite;
 }
+
+ #cr-deco-clouds {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+ }
+ .cr-deco-cloud {
+  position: absolute;
+  left: -34vw;
+  width: 210px;
+  height: 72px;
+  opacity: 0.22;
+  filter: blur(30px);
+  background: rgba(214, 218, 224, 0.1);
+  border-radius: 58% 42% 52% 48% / 62% 54% 46% 38%;
+  box-shadow: 42px -20px 0 -8px rgba(214, 218, 224, 0.3),
+              104px -8px 0 -2px rgba(214, 218, 224, 0.48),
+              158px 12px 0 -12px rgba(214, 218, 224, 0.42);
+  will-change: transform;
+ }
+ .cr-deco-cloud::before,
+ .cr-deco-cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  filter: inherit;
+ }
+ .cr-deco-cloud::before {
+  width: 92px;
+  height: 64px;
+  left: 26px;
+  top: -30px;
+  border-radius: 48% 52% 44% 56% / 58% 46% 54% 42%;
+ }
+ .cr-deco-cloud::after {
+  width: 116px;
+  height: 54px;
+  left: 92px;
+  top: -22px;
+  border-radius: 56% 44% 58% 42% / 48% 62% 38% 52%;
+ }
+ .cr-deco-cloud.c1 { left: -34vw; top: 50%; animation: cr-deco-cloud-drift-1 445s linear infinite; transform: scale(0.9); }
+ .cr-deco-cloud.c2 { right: -1vw; top: 36%; animation: cr-deco-cloud-drift-2 290s linear infinite; transform: scale(1.18); opacity: 0.18; }
+ .cr-deco-cloud.c3 { left: 60vw; top: 68%; animation: cr-deco-cloud-drift-3 530s linear infinite; transform: scale(0.72); opacity: 0.24; }
+ @keyframes cr-deco-cloud-drift-1 {
+  from { transform: translateX(-18vw) scale(0.9); }
+  to { transform: translateX(135vw) scale(0.9); }
+ }
+ @keyframes cr-deco-cloud-drift-2 {
+  from { transform: translateX(-28vw) scale(1.18); }
+  to { transform: translateX(138vw) scale(1.18); }
+ }
+ @keyframes cr-deco-cloud-drift-3 {
+  from { transform: translateX(-12vw) scale(0.72); }
+  to { transform: translateX(142vw) scale(0.72); }
+ }
 
 .glider-svg {
   display: block;
@@ -723,19 +791,19 @@
 
 @keyframes glider-pass {
   0%,
-  98% {
+  90% {
     left: -120px;
     opacity: 0;
     transform: translateY(0);
   }
 
-  98.01% {
+  90.01% {
     left: -120px;
     opacity: 0.75;
     transform: translateY(0);
   }
 
-  99.0% {
+  95.0% {
     left: 50vw;
     opacity: 0.8;
     transform: translateY(-8px);
@@ -751,7 +819,7 @@
     0%   { transform: translateX(-50%) rotate(-17deg); }
     100% { transform: translateX(-50%) rotate(16deg); }
   }
-  .cr-deco-sky { position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; gap:5px; padding:0 8px; }
+  .cr-deco-sky { position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-end; gap:5px; padding:0 8px; z-index:1; }
   .cr-deco-sky i { display:block; position:relative; background:linear-gradient(to bottom, #11083b, #111111) !important;
                    border-radius: 2px;
                    position: relative;
@@ -1600,11 +1668,17 @@
 
   function renderDeco(){
     let el = document.getElementById('cr-deco-stage');
+    let clouds = document.getElementById('cr-deco-clouds');
     if (currentTheme !== 'deco'){
       if (el) el.remove();
+      if (clouds) clouds.remove();
       return;
     }
     if (el) return; // 이미 돌고 있으면 재생성하지 않아 애니메이션이 끊기지 않게 둔다
+    clouds = document.createElement('div');
+    clouds.id = 'cr-deco-clouds';
+    clouds.innerHTML = '<div class="cr-deco-cloud c1"></div><div class="cr-deco-cloud c2"></div><div class="cr-deco-cloud c3"></div>';
+    document.body.appendChild(clouds);
     el = document.createElement('div');
     el.id = 'cr-deco-stage';
     let html = '<div class="cr-deco-beam b1"></div><div class="cr-deco-beam b2"></div>'
@@ -2838,7 +2912,7 @@
   if (animRemoveBtn) animRemoveBtn.onclick = () => {
     animRemoved = !animRemoved;
     if (animRemoved){
-      ['cr-hearts','cr-snow','cr-bubbles','cr-deco-stage'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
+      ['cr-hearts','cr-snow','cr-bubbles','cr-deco-stage','cr-deco-clouds'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
       animRemoveBtn.textContent = '👁';
     } else {
       renderHearts(); renderSnow(); renderBubbles(); renderDeco();
