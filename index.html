@@ -86,14 +86,16 @@
   .cr-dot { width:9px; height:9px; border-radius:3px; display:inline-block; }
 
   .cr-dept-group { margin-bottom:14px; }
+  .cr-dept-groups { display:flex; align-items:flex-start; gap:20px; overflow-x:auto; padding-bottom:8px; }
+  .cr-dept-groups .cr-dept-group { flex:0 0 auto; margin-bottom:0; }
   .cr-dept-group-title { font-size:12px; font-weight:800; color:var(--muted); margin:0 0 6px 2px; text-transform:none; }
   .cr-board { display:flex; gap:12px; overflow-x:auto; padding-bottom:6px; }
-  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; max-height:420px; position:relative; z-index:1; }
+  .cr-col { background:var(--panel); border:1px solid var(--line); border-radius:12px; min-width:200px; max-width:220px; flex:0 0 auto; display:flex; flex-direction:column; position:relative; z-index:1; }
   .cr-col-head { padding:11px 12px 9px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; }
   .cr-col-name { font-weight:800; font-size:13px; }
   .cr-col-count { font-size:11px; font-weight:700; color:var(--muted); background:var(--bg); border-radius:20px; padding:2px 8px; }
   .cr-col-count.busy { color:var(--accent); background:var(--accent-dim); }
-  .cr-col-body { padding:9px; overflow-y:auto; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .cr-col-body { padding:9px; overflow-y:visible; display:flex; flex-direction:column; gap:8px; flex:1; }
   .cr-col-empty { color:var(--muted); font-size:11.5px; text-align:center; padding:18px 4px; }
   .cr-col-rm { background:none; border:none; cursor:pointer; color:var(--muted); font-size:14px; padding:2px 4px; }
   .cr-col-unavail { opacity:0.55; }
@@ -192,6 +194,10 @@
   .cr-hack-success-text { font-size:12px; line-height:1.7; color:#7CFFB2; margin-bottom:14px; white-space:pre-line; }
   .cr-hack-success-close { width:100%; border:1px solid #1FD65F; background:transparent; color:#33FF66; padding:7px 0; font-family:inherit; font-weight:700; font-size:12px; cursor:pointer; border-radius:2px; }
   .cr-hack-success-close:hover { background:rgba(31,214,95,0.15); }
+  .cr-hack-overlay,
+  .cr-hack-overlay * {
+    font-family: 'DOSIyagiBoldface', serif !important;
+  }
   @keyframes cr-hack-flicker {
     0%, 100% { opacity:1; text-shadow:0 0 8px rgba(51,255,102,0.8); }
     50% { opacity:0.75; text-shadow:0 0 3px rgba(51,255,102,0.4); }
@@ -344,14 +350,11 @@
   background-image: linear-gradient(to right, #cc4e9400, #4f3a8e00) !important;
 }
 
-.theme-deco #cr-add-patient, 
 .theme-deco #cr-anim-toggle, 
 .theme-deco #cr-anim-remove,
 .theme-deco .cr-chip.done,
-.theme-deco .cr-dot, 
-.theme-deco .cr-status-dot,
 .theme-deco .cr-card-status.anomaly {
-  background-color: !important;
+  background-color: transparent !important;
   border-color: #53513700 !important;
   color: #ffffff !important;
 }
@@ -658,9 +661,9 @@
   #cr-deco-stage { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
   .cr-deco-beam {
     position:absolute; top:-14vh; left:50%; width:38vw; height:150vh;
-    filter: blur(100px) !important:
+    filter: blur(100px) !important;
     box-shadow: 0 0 100px 30px rgba(255, 255, 255, 0.1);
-    will-change: filter, transform:
+    will-change: filter, transform;
     transform: scale(1.2);
     opacity: 0.3 !important;
     transform-origin:50% 0; will-change:transform;
@@ -785,7 +788,7 @@
   /* 기하학적으로 깍갱하게 — 둥글기 전부 제거 후 쪼사단 모서리만 허용 */
   .theme-deco, .theme-deco * { border-radius:30 !important; }
   #cr-deco-stage .cr-deco-moon { border-radius:50% !important; }
-  .theme-deco .cr-status-dot, .theme-deco .cr-switch-thumb, .theme-deco .cr-box {border-radius: !important;}
+  .theme-deco .cr-status-dot, .theme-deco .cr-switch-thumb, .theme-deco .cr-box {border-radius:50% !important;}
 
   .theme-deco .cr-title {
     font-family: 'Limelight','Pretendard',serif;
@@ -868,13 +871,13 @@
   .theme-deco .cr-card:hover { transform:translate(-2px,-2px); background:#243066 !important; }
   .theme-deco .cr-card.st-consult   { background:#17306B !important; border-left-color:var(--consult) !important; }
   .theme-deco .cr-card.st-done      {background:#3A2C0E !important;border-left-color: #ba943d !important;}
-  .theme-deco .cr-card.st-discharge {background: #191919 !important;border-left-color:var(--discharge-ink) !important; filter:grayscale(1) !important;}
+  .theme-deco .cr-card.st-discharge {background: #1b1e39 !important;border-left-color: #666666 !important;}
   .theme-deco .cr-mini-panel { border-radius: 14px !important; }
   .theme-deco .cr-card.st-anomaly   { background:#3A1A2E !important; border-left-color:var(--anomaly) !important; }
   .theme-deco .cr-card-name {font-size:13.5px;font-weight: 550;letter-spacing:0.4px;color:#F0DFAE;}
   .theme-deco .cr-status-dot { width:7px; height:7px; transform:rotate(45deg); box-shadow:none; margin-right:7px; }
   .theme-deco .cr-card-no, .theme-deco .cr-mono, .theme-deco .cr-us-time {
-    font-family: 'Cinzel','Pretendard',serif !important;
+    font-family:'SokchoBadaBatang',serif !important;
     letter-spacing:1.2px !important;
   }
   .theme-deco .cr-card-status { font-size:9.5px; font-weight:400; letter-spacing:1.6px; margin-top:6px; color:#F0DFAE !important; }
@@ -882,9 +885,9 @@
     font-size:9px; letter-spacing:1.2px; padding:4px 8px;
     border:none; color:#C9A667; background:#0A0E28;
   }
-  .theme-deco .cr-chip.done { background:#D9A94A !important; color:#0A0E28; font-weight: 100; }
+  .theme-deco .cr-chip.done { background:#a48548 !important; color:#0A0E28; font-weight: 100; }
   .theme-deco .cr-chip.cur:not(.consult) {background: #B8863A !important;color: #f1f1f1; font-weight: 100; }
-  .theme-deco .cr-chip.cur.consult { background:var(--consult) !important; color:#fff; font-weight: 100; }
+  .theme-deco .cr-chip.cur.consult { background: #13254f !important; color:#fff; font-weight: 100; }
 
   /* 버튼: 단색 면 + 오프셋 그림자, 호버시 색 반전 */
   .theme-deco .cr-btn {
@@ -916,8 +919,7 @@
     padding:12px 14px;
   }
   .theme-deco .cr-search-input::placeholder, .theme-deco input::placeholder, .theme-deco textarea::placeholder { color:#7A5C2E; }
-  .theme-deco .cr-search-input:focus,background: #1919196b !important;border-left-color: #505969 !important;    outline:none; background:#141A44 !important;
-  }
+  .theme-deco .cr-search-input:focus { background: #141A44 !important; border-left-color: #505969 !important; outline:none; }
   .theme-deco .cr-card.cr-search-hit { outline:4px solid #D9A94A; outline-offset:0; }
 
   .theme-deco .cr-legend { font-family:'Cinzel','Pretendard',serif; letter-spacing:2px; font-size:9.5px; color:#9C7A3D; gap:16px; margin-bottom:20px; }
@@ -954,7 +956,7 @@
   /* 스위치: 단색 마셈 레버 */
   .theme-deco .cr-room-switch { width:32px; height:14px; }
   .theme-deco .cr-switch-track { background:#0A0E28 !important; border:none; }
-  .theme-deco .cr-room-switch:not(.off) .cr-switch-track { background:#0A0E28 !important; }
+  .theme-deco .cr-room-switch:not(.off) .cr-switch-track { background:#d3b67e !important; }
   .theme-deco .cr-switch-thumb {width:10px;height:10px;top:2px;background: #e2f5e8;box-shadow:none;}
   .theme-deco .cr-room-switch:not(.off) .cr-switch-thumb { transform:translateX(17px); }
   .theme-deco .cr-room-switch.off .cr-switch-thumb { background:#4A4258; }
@@ -1814,14 +1816,14 @@
       const entry = p.depts.find(d=>d.name===room.dept);
       if (entry) entry.room = roomName;
       if (!p.history) p.history = [];
-      p.history.push({ dept: room.dept, room: roomName, startedAt: Date.now(), doneAt: null, paused: false });
+      p.history.push({ dept: room.dept, room: roomName, startedAt: Date.now(), consultStartedAt: null, doneAt: null, paused: false });
     }
   }
 
   function closeHistoryFor(p, roomName, paused){
     if (!p.history) return;
     for (let i = p.history.length - 1; i >= 0; i--){
-      if (p.history[i].room === roomName && p.history[i].doneAt === null){
+      if (p.history[i].room === roomName && p.history[i].doneAt == null){
         p.history[i].doneAt = Date.now();
         p.history[i].paused = !!paused;
         break;
@@ -1878,6 +1880,14 @@
     const p = state.patients.find(x=>x.id===id);
     if (!p) return;
     snapshotForUndo();
+    if (p.currentDept && p.history){
+      for (let i = p.history.length - 1; i >= 0; i--){
+        if (p.history[i].room === p.currentDept && p.history[i].doneAt == null){
+          p.history[i].consultStartedAt = Date.now();
+          break;
+        }
+      }
+    }
     p.status = 'in-consult';
     p.updatedAt = Date.now();
     saveState(); render();
@@ -2369,7 +2379,7 @@
       + '<span><span class="cr-dot" style="background:var(--discharge-ink)"></span>귀가</span>'
       + '<span><span class="cr-dot" style="background:var(--anomaly)"></span>이상상태</span>'
       + '</div>'
-      + (groupsHtml || '<div class="cr-empty-note" style="padding:20px;">먼저 오늘 운영하는 진료실을 추가해주세요</div>')
+      + (groupsHtml ? '<div class="cr-dept-groups">'+groupsHtml+'</div>' : '<div class="cr-empty-note" style="padding:20px;">먼저 오늘 운영하는 진료실을 추가해주세요</div>')
       + usPanelHtml()
       + '<div class="cr-bottom">'
       + '<div class="cr-mini-panel"><h4>🏠 귀가한 사람 ('+discharged.length+')</h4>'
@@ -2518,7 +2528,10 @@
     const historyRows = (p.history||[]).map((h,i)=>{
       const label = h.doneAt ? (h.paused ? '중단됨' : '완료') : '진행 중';
       const tagCls = h.doneAt ? 'done' : 'current-w';
-      const timeRange = fmtTime(h.startedAt) + ' ~ ' + (h.doneAt ? fmtTime(h.doneAt) : '');
+      const waitTime = fmtTime(h.startedAt);
+      const consultTime = h.consultStartedAt ? fmtTime(h.consultStartedAt) : '진료 전';
+      const endTime = h.doneAt ? fmtTime(h.doneAt) : '';
+      const timeRange = '대기 ' + waitTime + ', 진료 ' + consultTime + ' ~ ' + endTime;
       return '<div class="cr-detail-row"><span class="cr-dept-name">'+(i+1)+'. '+esc(h.room)+'</span><span class="cr-dept-tag '+tagCls+'">'+timeRange+' · '+label+'</span></div>';
     }).join('');
     const historySection = historyRows ? '<div class="cr-field"><label>방문 순서</label><div>'+historyRows+'</div></div>' : '';
