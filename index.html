@@ -168,6 +168,7 @@
   .cr-pv-board { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; }
   .cr-pv-col { background:#fff; border:1px solid #E2E6ED; border-radius:10px; min-width:170px; max-width:190px; flex:0 0 auto; }
   .cr-pv-col-head { padding:8px 10px; border-bottom:1px solid #E2E6ED; font-weight:800; font-size:12.5px; color:#1C2430; display:flex; align-items:center; justify-content:space-between; }
+  .cr-pv-avg { display:block; font-size:9.5px; font-weight:600; color:#7C8798; margin-top:2px; }
   .cr-pv-count { font-size:10px; font-weight:700; color:#7C8798; background:#F5F7FA; border-radius:20px; padding:2px 7px; }
   .cr-pv-col-body { padding:7px; display:flex; flex-direction:column; gap:6px; }
   .cr-pv-empty { color:#7C8798; font-size:11px; text-align:center; padding:14px 4px; }
@@ -2316,7 +2317,7 @@
 
   function statusLabel(deptLabel, cs, timeStr){
     if (cs==='waiting') return deptLabel + ' 대기중';
-    if (cs==='in-consult') return deptLabel + ' 진료중';
+    if (cs==='in-consult') return deptLabel==='약국부' ? '조제대기' : deptLabel + ' 진료중';
     if (cs==='done') return deptLabel + ' 완료' + (timeStr ? ' · '+timeStr : '');
     if (cs==='discharged') return '귀가';
     if (cs==='anomaly') return '이상상태';
@@ -2437,17 +2438,18 @@
         if (r.unavailable) return;
         const active = state.patients.filter(p => p.currentDept === r.name && (p.status==='waiting' || p.status==='in-consult'));
         const waitingCount = active.filter(p=>p.status==='waiting').length;
+        const avgTxt = fmtWaitMs(roomAvgDurationMs(r.name));
         const cardsHtml = active.slice()
           .sort((a,b) => (a.status==='in-consult'?-1:0) - (b.status==='in-consult'?-1:0))
           .map(p => {
             const isConsult = p.status === 'in-consult';
-            const waitTxt = isConsult ? '진료중' : fmtWaitMs(estimateWaitMs(p, r.name));
+            const waitTxt = isConsult ? (r.name==='약국부' ? '조제대기' : '진료중') : fmtWaitMs(estimateWaitMs(p, r.name));
             return '<div class="cr-pv-card'+(isConsult?' consult':'')+'">'
               + '<span class="cr-pv-name">'+esc(p.name)+' <span class="cr-pv-no">#'+esc(p.patientNo)+'</span></span>'
               + '<span class="cr-pv-wait">'+waitTxt+'</span></div>';
           }).join('');
         colsHtml += '<div class="cr-pv-col">'
-          + '<div class="cr-pv-col-head">'+esc(r.name)+'<span class="cr-pv-count">대기 '+waitingCount+'</span></div>'
+          + '<div class="cr-pv-col-head"><span>'+esc(r.name)+'<span class="cr-pv-avg">'+(r.name==='약국부'?'조제':'진료')+' 평균 '+avgTxt.replace('약 ','')+'</span></span><span class="cr-pv-count">대기 '+waitingCount+'</span></div>'
           + '<div class="cr-pv-col-body">'+(cardsHtml || '<div class="cr-pv-empty">대기 없음</div>')+'</div>'
           + '</div>';
       });
@@ -2775,8 +2777,10 @@
         actionBtns = '<div class="cr-empty-note">다른 필요 진료는 모두 끝났고 초음파만 남았습니다. 위 버튼으로 예약시간에 맞춰 보내주세요.</div>';
       }
     } else if (curDeptName === '약국부' && p.status==='waiting'){
-      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-finish-pharmacy" style="width:100%">조제 완료 · 귀가 처리</button>';
+      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-start-consult" style="width:100%">조제 시작</button>';
       callBtn = '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-copy-call" style="width:100%;margin-top:6px;">📋 호출 문구 복사</button>';
+    } else if (curDeptName === '약국부' && p.status==='in-consult'){
+      actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-finish-pharmacy" style="width:100%">조제 완료 · 귀가 처리</button>';
     } else if (p.status === 'waiting'){
       actionBtns = '<button class="cr-btn cr-btn-primary" id="cr-start-consult" style="width:100%">진료 시작 (미니차트 인계)</button>';
       callBtn = '<button class="cr-btn cr-btn-soft cr-btn-sm" id="cr-copy-call" style="width:100%;margin-top:6px;">📋 호출 문구 복사</button>';
