@@ -160,6 +160,9 @@
   .cr-view-tabs { display:flex; gap:6px; margin-bottom:14px; }
   .cr-view-tab { border:none; background:#EDEFF3; color:#7C8798; font-weight:700; font-size:12.5px; padding:8px 14px; border-radius:20px; cursor:pointer; }
   .cr-view-tab.active { background:#2F6FED; color:#fff; }
+  .cr-view-tabs-themed { gap:4px; }
+  .cr-view-tabs-themed .cr-view-tab { background:rgba(0,0,0,0.32); color:rgba(255,255,255,0.85); font-size:10px; font-weight:600; padding:5px 10px; }
+  .cr-view-tabs-themed .cr-view-tab.active { background:rgba(0,0,0,0.55); color:#fff; }
 
   /* 환자 대기 현황 — 컴팩트 보드, 항상 기본 테마 색상 고정 */
   .cr-pv-board { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; }
@@ -2352,14 +2355,29 @@
 
   // ---------- 환자 대기 현황(환자용 뷰) ----------
   function tabSwitcherHtml(){
-    return '<div class="cr-view-tabs">'
+    const themed = currentTheme !== 'light';
+    return '<div class="cr-view-tabs'+(themed?' cr-view-tabs-themed':'')+'">'
       + '<button class="cr-view-tab'+(currentView==='staff'?' active':'')+'" data-view="staff">안내중앙 환자시트</button>'
       + '<button class="cr-view-tab'+(currentView==='patient'?' active':'')+'" data-view="patient">환자 대기 현황</button>'
       + '</div>';
   }
   function bindTabSwitcher(){
     document.querySelectorAll('.cr-view-tab').forEach(el=>{
-      el.onclick = () => { currentView = el.getAttribute('data-view'); render(); };
+      el.onclick = () => {
+        const v = el.getAttribute('data-view');
+        if (v === currentView) return;
+        currentView = v;
+        if (v === 'patient'){
+          // 다른 테마의 배경 애니메이션/이펙트를 끄고 순수 기본 화면으로 전환
+          document.body.className = '';
+          ['cr-hearts','cr-snow','cr-bubbles','cr-matrix','cr-deco-stage'].forEach(id=>{ const el2=document.getElementById(id); if (el2) el2.remove(); });
+          if (matrixTimer){ clearInterval(matrixTimer); matrixTimer = null; }
+          if (matrixResizeHandler){ window.removeEventListener('resize', matrixResizeHandler); matrixResizeHandler = null; }
+          render();
+        } else {
+          applyTheme(); // 원래 테마 배경/애니메이션 복구 (내부에서 render()도 호출됨)
+        }
+      };
     });
   }
   function roomAvgDurationMs(roomName){
