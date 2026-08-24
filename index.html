@@ -156,6 +156,25 @@
   .cr-bottom { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; position:relative; z-index:5; }
   .cr-easter { position:fixed; right:10px; bottom:8px; font-size:11px; color:var(--line); opacity:0.55; cursor:default; user-select:none; z-index:5; transition:opacity .2s ease, color .2s ease; }
 
+  /* 화면 전환 탭(북마크) — 항상 기본 테마 색으로, 어떤 테마에서도 동일하게 보임 */
+  .cr-view-tabs { display:flex; gap:6px; margin-bottom:14px; }
+  .cr-view-tab { border:none; background:#EDEFF3; color:#7C8798; font-weight:700; font-size:12.5px; padding:8px 14px; border-radius:20px; cursor:pointer; }
+  .cr-view-tab.active { background:#2F6FED; color:#fff; }
+
+  /* 환자 대기 현황 — 컴팩트 보드, 항상 기본 테마 색상 고정 */
+  .cr-pv-board { display:flex; gap:10px; overflow-x:auto; padding-bottom:6px; }
+  .cr-pv-col { background:#fff; border:1px solid #E2E6ED; border-radius:10px; min-width:170px; max-width:190px; flex:0 0 auto; }
+  .cr-pv-col-head { padding:8px 10px; border-bottom:1px solid #E2E6ED; font-weight:800; font-size:12.5px; color:#1C2430; display:flex; align-items:center; justify-content:space-between; }
+  .cr-pv-count { font-size:10px; font-weight:700; color:#7C8798; background:#F5F7FA; border-radius:20px; padding:2px 7px; }
+  .cr-pv-col-body { padding:7px; display:flex; flex-direction:column; gap:6px; }
+  .cr-pv-empty { color:#7C8798; font-size:11px; text-align:center; padding:14px 4px; }
+  .cr-pv-card { border:1px solid #E2E6ED; border-left:3px solid #1C2430; border-radius:7px; padding:6px 8px; background:#fff; display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .cr-pv-card.consult { border-left-color:#2F6FED; background:#EAF0FE; }
+  .cr-pv-name { font-size:11.5px; font-weight:700; color:#1C2430; }
+  .cr-pv-no { font-size:9.5px; font-weight:600; color:#7C8798; }
+  .cr-pv-wait { font-size:10px; font-weight:700; color:#7C8798; white-space:nowrap; }
+  .cr-pv-card.consult .cr-pv-wait { color:#2F6FED; }
+
   .cr-anim-toggle { display:none; position:fixed; left:10px; bottom:8px; z-index:6; border:none; background:rgba(0,0,0,0.4); color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:13px; align-items:center; justify-content:center; }
   .cr-anim-remove { left:46px; font-size:14px; }
   body.theme-pink .cr-anim-toggle, body.theme-winter .cr-anim-toggle, body.theme-summer .cr-anim-toggle, body.theme-deco .cr-anim-toggle { display:flex; }
@@ -1470,6 +1489,7 @@
   let roomDraftDept = '';
   let lastRoomAddedDept = '';
   let currentTheme = 'light';
+  let currentView = 'staff'; // 'staff' | 'patient'
   let animPaused = false;
   let animRemoved = false;
   const THEME_TABLE = {
@@ -2330,6 +2350,96 @@
 
   function esc(s){ return (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+  // ---------- 환자 대기 현황(환자용 뷰) ----------
+  function tabSwitcherHtml(){
+    return '<div class="cr-view-tabs">'
+      + '<button class="cr-view-tab'+(currentView==='staff'?' active':'')+'" data-view="staff">안내중앙 환자시트</button>'
+      + '<button class="cr-view-tab'+(currentView==='patient'?' active':'')+'" data-view="patient">환자 대기 현황</button>'
+      + '</div>';
+  }
+  function bindTabSwitcher(){
+    document.querySelectorAll('.cr-view-tab').forEach(el=>{
+      el.onclick = () => { currentView = el.getAttribute('data-view'); render(); };
+    });
+  }
+  function roomAvgDurationMs(roomName){
+    let total = 0, count = 0;
+    state.patients.forEach(p=>{
+      (p.history||[]).forEach(h=>{
+        if (h.room === roomName && h.doneAt && !h.paused){
+          total += (h.doneAt - h.startedAt);
+          count++;
+        }
+      });
+    });
+    return count ? (total / count) : (10 * 60 * 1000); // 기록 없으면 기본 10분으로 가정
+  }
+  function openHistoryFor(p, roomName){
+    const hist = p.history || [];
+    for (let i = hist.length - 1; i >= 0; i--){
+      if (hist[i].room === roomName && hist[i].doneAt == null) return hist[i];
+    }
+    return null;
+  }
+  function estimateWaitMs(p, roomName){
+    const avg = roomAvgDurationMs(roomName);
+    const waiting = state.patients.filter(x => x.currentDept === roomName && x.status === 'waiting')
+      .sort((a,b) => {
+        const ha = openHistoryFor(a, roomName), hb = openHistoryFor(b, roomName);
+        return (ha ? ha.startedAt : 0) - (hb ? hb.startedAt : 0);
+      });
+    const myIdx = waiting.findIndex(x => x.id === p.id);
+    const ahead = myIdx >= 0 ? myIdx : waiting.length;
+    const inConsult = state.patients.find(x => x.currentDept === roomName && x.status === 'in-consult');
+    let remaining = 0;
+    if (inConsult){
+      const h = openHistoryFor(inConsult, roomName);
+      if (h && h.consultStartedAt){
+        remaining = Math.max(0, avg - (Date.now() - h.consultStartedAt));
+      } else {
+        remaining = avg;
+      }
+    }
+    return ahead * avg + remaining;
+  }
+  function fmtWaitMs(ms){
+    const min = Math.round(ms / 60000);
+    if (min <= 0) return '곧 진료';
+    if (min < 60) return '약 ' + min + '분';
+    return '약 ' + Math.floor(min/60) + '시간 ' + (min%60) + '분';
+  }
+  function renderPatientView(){
+    const app = document.getElementById('cr-app');
+    app.className = 'cr-root';
+    let html = tabSwitcherHtml();
+    const depts = deptList();
+    let colsHtml = '';
+    depts.forEach(dept => {
+      roomsOfDept(dept).forEach(r => {
+        if (r.unavailable) return;
+        const active = state.patients.filter(p => p.currentDept === r.name && (p.status==='waiting' || p.status==='in-consult'));
+        const waitingCount = active.filter(p=>p.status==='waiting').length;
+        const cardsHtml = active.slice()
+          .sort((a,b) => (a.status==='in-consult'?-1:0) - (b.status==='in-consult'?-1:0))
+          .map(p => {
+            const isConsult = p.status === 'in-consult';
+            const waitTxt = isConsult ? '진료중' : fmtWaitMs(estimateWaitMs(p, r.name));
+            return '<div class="cr-pv-card'+(isConsult?' consult':'')+'">'
+              + '<span class="cr-pv-name">'+esc(p.name)+' <span class="cr-pv-no">#'+esc(p.patientNo)+'</span></span>'
+              + '<span class="cr-pv-wait">'+waitTxt+'</span></div>';
+          }).join('');
+        colsHtml += '<div class="cr-pv-col">'
+          + '<div class="cr-pv-col-head">'+esc(r.name)+'<span class="cr-pv-count">대기 '+waitingCount+'</span></div>'
+          + '<div class="cr-pv-col-body">'+(cardsHtml || '<div class="cr-pv-empty">대기 없음</div>')+'</div>'
+          + '</div>';
+      });
+    });
+    html += colsHtml ? '<div class="cr-pv-board">'+colsHtml+'</div>' : '<div class="cr-empty-note" style="padding:20px;">현재 운영 중인 진료실이 없습니다</div>';
+    app.innerHTML = html;
+    bindTabSwitcher();
+  }
+
+
   function usPanelHtml(){
     const list = state.patients.filter(p=>{
       const e = p.depts.find(d=>d.name==='초음파');
@@ -2363,8 +2473,13 @@
 
   function render(){
     const app = document.getElementById('cr-app');
+    if (currentView === 'patient'){
+      if (!loaded){ app.className = 'cr-root'; app.innerHTML = tabSwitcherHtml() + '<div style="padding:40px;text-align:center;color:#7C8798;font-size:13px;">불러오는 중…</div>'; bindTabSwitcher(); return; }
+      renderPatientView();
+      return;
+    }
     app.className = 'cr-root' + (currentTheme !== 'light' ? ' themed theme-' + currentTheme : '');
-    if (!loaded){ app.innerHTML = '<div style="padding:40px;text-align:center;color:#7C8798;font-size:13px;">불러오는 중…</div>'; return; }
+    if (!loaded){ app.innerHTML = tabSwitcherHtml() + '<div style="padding:40px;text-align:center;color:#7C8798;font-size:13px;">불러오는 중…</div>'; bindTabSwitcher(); return; }
 
     const depts = deptList();
     const groupsHtml = depts.map(dept => {
@@ -2405,7 +2520,8 @@
     const anomaly = state.patients.filter(p=>p.status==='anomaly');
 
     app.innerHTML =
-      '<div class="cr-topbar">'
+      tabSwitcherHtml()
+      + '<div class="cr-topbar">'
       + '<div class="cr-title">이울 중앙안내 환자 시트<small>미니차트 배정 · 진료실 대기 현황</small></div>'
       + '<div class="cr-topbtns">'
       + '<button class="cr-btn cr-btn-ghost" id="cr-add-room">+ 진료실</button>'
@@ -2438,6 +2554,7 @@
       + '</div></div>';
 
     bindBoardEvents();
+    bindTabSwitcher();
     if (modal) renderModal(); else removeModal();
   }
 
@@ -2988,6 +3105,8 @@
 
   console.log('%c🌿 이울 중앙안내 환자 시트', 'font-size:14px;font-weight:bold;');
   console.log('%c만든 사람: 이울 59기 김재서 — 그냥 여기 숨겨봤어요', 'color:#7C8798;');
+
+  setInterval(() => { if (currentView === 'patient' && !modal) render(); }, 30000);
 
   loadState();
 })();
