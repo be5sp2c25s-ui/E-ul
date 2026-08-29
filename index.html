@@ -2443,13 +2443,13 @@
           .sort((a,b) => (a.status==='in-consult'?-1:0) - (b.status==='in-consult'?-1:0))
           .map(p => {
             const isConsult = p.status === 'in-consult';
-            const waitTxt = isConsult ? (r.name==='약국부' ? '조제대기' : '진료중') : fmtWaitMs(estimateWaitMs(p, r.name));
+            const waitTxt = isConsult ? (r.dept==='약국부' ? '조제대기' : '진료중') : fmtWaitMs(estimateWaitMs(p, r.name));
             return '<div class="cr-pv-card'+(isConsult?' consult':'')+'">'
               + '<span class="cr-pv-name">'+esc(p.name)+' <span class="cr-pv-no">#'+esc(p.patientNo)+'</span></span>'
               + '<span class="cr-pv-wait">'+waitTxt+'</span></div>';
           }).join('');
         colsHtml += '<div class="cr-pv-col">'
-          + '<div class="cr-pv-col-head"><span>'+esc(r.name)+'<span class="cr-pv-avg">'+(r.name==='약국부'?'조제':'진료')+' 평균 '+avgTxt.replace('약 ','')+'</span></span><span class="cr-pv-count">대기 '+waitingCount+'</span></div>'
+          + '<div class="cr-pv-col-head"><span>'+esc(r.name)+'<span class="cr-pv-avg">'+(r.dept==='약국부'?'조제':'진료')+' 평균 '+avgTxt.replace('약 ','')+'</span></span><span class="cr-pv-count">대기 '+waitingCount+'</span></div>'
           + '<div class="cr-pv-col-body">'+(cardsHtml || '<div class="cr-pv-empty">대기 없음</div>')+'</div>'
           + '</div>';
       });
@@ -2698,7 +2698,7 @@
       let tagCls='pending', label='대기 예정';
       if (d.done) { tagCls='done'; label='완료'; }
       else if (d.name === curDeptName) {
-        if (p.status==='in-consult'){ tagCls='current-c'; label=(p.currentDept||'')+' · 진료중'; }
+        if (p.status==='in-consult'){ tagCls='current-c'; label=(p.currentDept||'')+' · '+(d.name==='약국부'?'조제대기':'진료중'); }
         else { tagCls='current-w'; label=(p.currentDept||'')+' · 대기중'; }
       }
       return '<div class="cr-detail-row"><span class="cr-dept-name">'+esc(d.name)+'</span><span class="cr-dept-tag '+tagCls+'">'+esc(label)+'</span></div>';
