@@ -1769,7 +1769,14 @@
     db.ref(DB_PATH).on('value', (snapshot) => {
       if (modal) return; // 모달 열려있는 동안엔 원격 갱신으로 화면을 덮지 않음
       const val = snapshot.val();
-      const incoming = (val && Array.isArray(val.rooms) && Array.isArray(val.patients)) ? val : { rooms: [], patients: [] };
+      // rooms/patients를 각각 독립적으로 검증 — Firebase는 빈 배열([])을
+      // 저장하면 해당 경로 자체가 사라진 것처럼 돌려주기 때문에(예: 마지막
+      // 환자를 지우거나 "오늘 마감"으로 patients가 비면), 두 값을 한 묶음으로
+      // 검사하면 다른 한쪽(rooms)까지 통째로 비워지는 버그가 있었음
+      const incoming = {
+        rooms: (val && Array.isArray(val.rooms)) ? val.rooms : [],
+        patients: (val && Array.isArray(val.patients)) ? val.patients : []
+      };
       // 내용이 실제로 안 바뀌었으면 다시 그리지 않음 — 접속 직후 이중 렌더로
       // 버튼이 막 다시 그려지는 동안 첫 클릭이 씹히는 문제를 막기 위함
       if (loaded && JSON.stringify(incoming) === JSON.stringify(state)) return;
