@@ -1787,6 +1787,19 @@
     try { await db.ref(DB_PATH).set(state); }
     catch(e) { toast('저장 실패 — 네트워크를 확인해주세요'); }
   }
+  // 환자 정보만 바뀐 경우 patients 경로만 저장 — 동시에 다른 사람이 진료실을
+  // 수정 중이어도 이 클라이언트의 (구버전일 수 있는) rooms로 덮어쓰지 않기 위함
+  async function savePatients(){
+    if (!firebaseReady) { toast('Firebase 설정이 안 되어 있어 저장할 수 없습니다'); return; }
+    try { await db.ref(DB_PATH + '/patients').set(state.patients); }
+    catch(e) { toast('저장 실패 — 네트워크를 확인해주세요'); }
+  }
+  // 진료실 정보만 바뀐 경우 rooms 경로만 저장 (위와 반대 이유)
+  async function saveRooms(){
+    if (!firebaseReady) { toast('Firebase 설정이 안 되어 있어 저장할 수 없습니다'); return; }
+    try { await db.ref(DB_PATH + '/rooms').set(state.rooms); }
+    catch(e) { toast('저장 실패 — 네트워크를 확인해주세요'); }
+  }
 
   let toastTimer = null;
   function toast(msg){
@@ -1860,7 +1873,7 @@
     if (state.rooms.some(r => r.name === label)) { toast('이미 있는 진료실입니다'); return false; }
     snapshotForUndo();
     state.rooms.push({ id: uid(), name: label, dept: deptName, unavailable: false });
-    saveState();
+    saveRooms();
     return true;
   }
 
@@ -1869,7 +1882,7 @@
     if (inUse) { toast('해당 진료실에 대기/진료 중인 환자가 있어 삭제할 수 없습니다'); return; }
     snapshotForUndo();
     state.rooms = state.rooms.filter(r => r.name !== name);
-    saveState(); render();
+    saveRooms(); render();
   }
 
   function toggleRoomAvailability(name){
@@ -1878,7 +1891,7 @@
     snapshotForUndo();
     room.unavailable = !room.unavailable;
     toast(name + (room.unavailable ? ' — 진료 불가로 표시' : ' — 다시 사용 가능'));
-    saveState(); render();
+    saveRooms(); render();
   }
 
   function assignRoomToPatient(p, roomName){
@@ -1943,7 +1956,7 @@
       p.status = 'us-wait';
     }
     state.patients.push(p);
-    saveState(); render();
+    savePatients(); render();
     toast(next ? (name + '님 ' + next + ' 배정') : (name + '님 등록됨 — 초음파 예약 패널에서 관리'));
     return true;
   }
@@ -1962,7 +1975,7 @@
     }
     p.status = 'in-consult';
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
   }
 
   function finishDept(id){
@@ -1992,7 +2005,7 @@
       toast(p.name + '님 — 초음파만 남음, 예약 패널에서 보내주세요');
     }
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
   }
 
   function resolvePrescription(id, needed){
@@ -2026,7 +2039,7 @@
     p.currentDept = null;
     p.status = 'discharged';
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(p.name + '님 조제 완료 · 귀가 처리');
   }
 
@@ -2036,7 +2049,7 @@
     snapshotForUndo();
     p.labReady = !p.labReady;
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
   }
 
   function toggleSkipLab(id){
@@ -2045,7 +2058,7 @@
     snapshotForUndo();
     p.skipLab = !p.skipLab;
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(p.skipLab ? '검사결과 필요없음으로 표시' : '검사결과 필요 상태로 복귀');
   }
 
@@ -2056,7 +2069,7 @@
     if (p.status === 'anomaly') { p.status = p._prevStatus || 'waiting'; }
     else { p._prevStatus = p.status; p.status = 'anomaly'; }
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
   }
 
   function updatePatientInfo(id, no, name){
@@ -2073,7 +2086,7 @@
     p.name = name.trim();
     p.updatedAt = Date.now();
     editMode = false;
-    saveState(); render();
+    savePatients(); render();
     toast('환자 정보 수정됨');
   }
 
@@ -2083,7 +2096,7 @@
     snapshotForUndo();
     p.note = text.trim();
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast('메모 저장됨');
   }
 
@@ -2093,7 +2106,7 @@
     snapshotForUndo();
     p.usAptTime = time || null;
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(p.usAptTime ? '초음파 예약시간 저장됨 (' + p.usAptTime + ')' : '초음파 예약시간 삭제됨');
   }
 
@@ -2109,7 +2122,7 @@
       if (next){ assignRoomToPatient(p, next); p.status = 'waiting'; }
     }
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(deptName + ' 부서 추가됨');
   }
 
@@ -2123,7 +2136,7 @@
     snapshotForUndo();
     p.depts = p.depts.filter(d=>d.name!==deptName);
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(deptName + ' 부서 제거됨');
   }
 
@@ -2152,7 +2165,7 @@
     assignRoomToPatient(p, roomName);
     p.status = 'waiting';
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(p.name + '님 ' + roomName + '(으)로 직접 배정');
   }
 
@@ -2247,7 +2260,7 @@
     snapshotForUndo();
     state.patients = [];
     modal = null;
-    saveState(); render();
+    savePatients(); render();
     toast('환자 명단 초기화 완료 — 진료실 설정은 유지됨');
   }
 
@@ -2289,7 +2302,7 @@
     assignRoomToPatient(p, room);
     p.status = 'waiting';
     p.updatedAt = Date.now();
-    saveState(); render();
+    savePatients(); render();
     toast(p.name + '님 초음파로 이동');
   }
 
@@ -2297,7 +2310,7 @@
     snapshotForUndo();
     state.patients = state.patients.filter(x=>x.id!==id);
     modal = null;
-    saveState(); render();
+    savePatients(); render();
   }
 
   // ---------- rendering ----------
